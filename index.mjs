@@ -112,6 +112,7 @@ app.all('/clickup-assign', async (req, res) => {
             taskAssigneesEmails = task["assignees"].map( x => x["email"] );
           }
         }
+        console.log("taskAssigneesEmails:", taskAssigneesEmails);
         var clickupComment = await getTaskComments(taskId,clickupak);
         var frontConvId = clickupComment["front_conversation_id"];
         console.log("frontConvId:",frontConvId);
@@ -121,7 +122,7 @@ app.all('/clickup-assign', async (req, res) => {
           var teammates;
           await sdk.getTeammates()
             .then( async ({ data }) => {
-              console.log("Front teammates:",data);
+              console.log("Front teammates:",data["_results"].length);
               teammates = data["_results"];
               await sdk.getConversationById({conversation_id: frontConvId})
                 .then( async ({ data }) => {
@@ -138,6 +139,7 @@ app.all('/clickup-assign', async (req, res) => {
                     }                
                   }
                   if(taskAssigneesEmails.length==0){
+                    console.log("taskAssigneesEmails.length==0");
                     await sdk.patchConversationsConversation_id({assignee_id: null}, {conversation_id: frontConvId})
                         .then(({ data }) => console.log(data))
                         .catch(err => console.error(err));
