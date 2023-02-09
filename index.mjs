@@ -37,8 +37,9 @@ async function getTask(taskId, clickupak) {
     );
   
     const data = await resp.text();
-    console.dir(JSON.parse(data));
-    return data;
+    var task = JSON.parse(data);
+    console.dir(task);
+    return task;
   }
 
   async function getTaskComments(taskId, clickupak) {
