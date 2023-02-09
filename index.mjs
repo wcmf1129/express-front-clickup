@@ -106,6 +106,7 @@ app.all('/clickup-assign', async (req, res) => {
         var taskId = req.body["task_id"];
 
         var task = await getTask(taskId,clickupak);
+        console.log("task assignees:",task["assignees"]);
         var taskAssigneesEmails = []
         if(task["assignees"]){
           if(task["assignees"].length>0){
