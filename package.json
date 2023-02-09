@@ -2,9 +2,9 @@
   "name": "starter-express-api",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.mjs",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.mjs"
   },
   "repository": {
     "type": "git",
@@ -17,10 +17,12 @@
   },
   "homepage": "https://github.com/cyclic-software/starter-express-api#readme",
   "dependencies": {
+    "api": "^5.0.7",
     "body-parser": "^1.20.1",
     "crypto": "^1.0.1",
     "express": "^4.17.1",
     "express-useragent": "^1.0.15",
+    "node-fetch": "^3.3.0",
     "save-dev": "^0.0.1-security"
   }
 }
