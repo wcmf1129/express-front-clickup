@@ -105,7 +105,7 @@ app.all('/clickup-assign', async (req, res) => {
     if(xSignature==signature){
         var taskId = req.body["task_id"];
 
-        const task = await getTask(taskId,clickupak);
+        const task = JSON.parse(JSON.stringify(await getTask(taskId,clickupak)));
         console.log("task:",task);
         console.log("task:",JSON.stringify(task) );
         console.log("task id:",task["id"]);
