@@ -160,9 +160,15 @@ app.all('/clickup-assign', async (req, res) => {
     }else{
         res.send('Unauthorized request')
     }
-
-
     
+})
+
+app.all('/front-comment', (req, res) => {
+  var ip = req.socket.remoteAddress;
+  console.log("Just got a request!",ip,"param:",req.params,"body:");
+  console.dir(req.body, { depth: null });
+  
+  res.send('Yo!')
 })
 
 app.listen(process.env.PORT || 3000)
