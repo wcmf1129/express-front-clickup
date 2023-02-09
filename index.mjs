@@ -2,6 +2,7 @@ import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 
 import fetch from 'node-fetch';
+const sdk = require('api')('@front/v1.0.0#189xzg3o3klblhcee4');
 const express = require('express')
 const app = express()
 var bodyParser = require('body-parser');
