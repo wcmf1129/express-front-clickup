@@ -90,6 +90,7 @@ app.all('/', (req, res) => {
 app.all('/clickup-assign', async (req, res) => {
     var ip = req.socket.remoteAddress;
     console.log("clickup-assign",ip,"param:",req.params,"body:");
+    console.log("clickupak.length:", clickupak.length);
     console.dir(req.body, { depth: null });
     var xSignature = req.get('X-Signature');
     console.log("X-Signature:",xSignature);
