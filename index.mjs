@@ -87,7 +87,7 @@ app.all('/', (req, res) => {
     res.send('Yo!')
 })
 
-app.all('/clickup-assign', (req, res) => {
+app.all('/clickup-assign', async (req, res) => {
     var ip = req.socket.remoteAddress;
     console.log("clickup-assign",ip,"param:",req.params,"body:");
     console.dir(req.body, { depth: null });
