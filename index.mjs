@@ -105,8 +105,10 @@ app.all('/clickup-assign', async (req, res) => {
 
         var task = await getTask(taskId,clickupak);
         var taskAssigneesEmails = []
-        if(task["assignees"].length>0){
-          taskAssigneesEmails = task["assignees"].map( x => x["email"] );
+        if(task["assignees"]){
+          if(task["assignees"].length>0){
+            taskAssigneesEmails = task["assignees"].map( x => x["email"] );
+          }
         }
         var clickupComment = await getTaskComments(taskId,clickupak);
         var frontConvId = clickupComment["front_conversation_id"];
