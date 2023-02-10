@@ -177,11 +177,11 @@ app.all('/front-comment', (req, res) => {
   var ip = req.socket.remoteAddress;
   console.log("Just got a request!",ip,"param:",req.params,"body:");
   console.dir(req.body, { depth: null });
-  var xSignature = req.get('X-Signature');
+  var xSignature = req.get('X-Front-Signature');
   console.log("X-Signature:",xSignature);
   var bodyString = JSON.stringify(req.body);
 
-  var validation = validateFrontSignature(body, xSignature, frontwhs);
+  var validation = validateFrontSignature(bodyString, xSignature, frontwhs);
   console.log("validation:", validation);
   
   res.send('Yo!')
