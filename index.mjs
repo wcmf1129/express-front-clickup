@@ -194,7 +194,7 @@ app.all('/front-comment', (req, res) => {
       console.log("orderNumber:", orderNumber);
     }
     
-    links = req.body["conversation"]["links"];
+    var links = req.body["conversation"]["links"];
     console.log("links:", links);
 
     res.send('authentication succeed');
