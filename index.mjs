@@ -196,6 +196,16 @@ app.all('/front-comment', (req, res) => {
     
     var links = req.body["conversation"]["links"];
     console.log("links:", links);
+    let taskRegex = /com\/t\/[a-zA-Z0-9]+/;
+    
+    for(var i=0;i<links.length;i++){
+      let taskResult = taskRegex.exec(links[i]["external_url"]);
+      if(taskResult){
+        var taskId = taskResult[0].replace("com\/t\/", "").trim();
+        console.log("taskId:", taskId);
+      }
+      
+    }
 
     res.send('authentication succeed');
   }else{
