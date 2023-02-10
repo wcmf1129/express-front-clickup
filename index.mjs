@@ -192,7 +192,10 @@ app.all('/front-comment', (req, res) => {
     if(result){
       let orderNumber = result[0].replace("S/O", "").trim();
       console.log("orderNumber:", orderNumber);
-    }    
+    }
+    
+    links = req.body["conversation"]["links"];
+    console.log("links:", links);
 
     res.send('authentication succeed');
   }else{
