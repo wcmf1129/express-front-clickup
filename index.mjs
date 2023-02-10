@@ -181,7 +181,7 @@ app.all('/front-comment', (req, res) => {
   console.log("X-Signature:",xSignature);
   var bodyString = JSON.stringify(req.body);
 
-  var validation = validateFrontSignature(bodyString, xSignature, frontwhs);
+  var validation = validateFrontSignature(req.body, xSignature, frontwhs);
   console.log("validation:", validation);
   
   res.send('Yo!')
