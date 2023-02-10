@@ -12,6 +12,7 @@ const crypto = require('crypto');
 const clickupak = process.env.clickupak;
 const clickupwhs = process.env.clickupwhs;
 const frontak = process.env.frontak;
+const frontwhs = process.env.frontwhs;
 
 app.use(useragent.express());
 app.use(bodyParser.json());    
@@ -163,10 +164,25 @@ app.all('/clickup-assign', async (req, res) => {
     
 })
 
+
+function validateFrontSignature(data, signature, apiSecret) {
+  var hash = crypto.createHmac('sha1', apiSecret)
+                   .update(JSON.stringify(data))
+                   .digest('base64');
+
+  return crypto.timingSafeEqual(Buffer.from(hash), Buffer.from(signature));
+}
+
 app.all('/front-comment', (req, res) => {
   var ip = req.socket.remoteAddress;
   console.log("Just got a request!",ip,"param:",req.params,"body:");
   console.dir(req.body, { depth: null });
+  var xSignature = req.get('X-Signature');
+  console.log("X-Signature:",xSignature);
+  var bodyString = JSON.stringify(req.body);
+
+  var validation = validateFrontSignature(body, xSignature, frontwhs);
+  console.log("validation:", validation);
   
   res.send('Yo!')
 })
