@@ -13,6 +13,7 @@ const clickupak = process.env.clickupak;
 const clickupwhs = process.env.clickupwhs;
 const frontak = process.env.frontak;
 const frontwhs = process.env.frontwhs;
+const soField = process.env.sofield;
 
 app.use(useragent.express());
 app.use(bodyParser.json());    
@@ -173,6 +174,32 @@ function validateFrontSignature(data, signature, apiSecret) {
   return crypto.timingSafeEqual(Buffer.from(hash), Buffer.from(signature));
 }
 
+async function setTaskField(taskId, fieldId, fieldValue){
+  const query = new URLSearchParams({
+    // custom_task_ids: 'true',
+    // team_id: '123'
+  }).toString();
+
+  // const taskId = '860pwfgfd';
+  // const fieldId = 'a5a50dec-2ab2-4210-b03a-bfec443fc1bb';
+  const resp = await fetch(
+    `https://api.clickup.com/api/v2/task/${taskId}/field/${fieldId}?${query}`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: clickupak
+      },
+      body: JSON.stringify({
+        value: fieldValue
+      })
+    }
+  );
+
+  const data = await resp.json();
+  console.log(data);
+}
+
 app.all('/front-comment', (req, res) => {
   var ip = req.socket.remoteAddress;
   console.log("Just got a request!",ip,"param:",req.params,"body:");
@@ -189,8 +216,9 @@ app.all('/front-comment', (req, res) => {
     console.log("frontCommentText:", frontCommentText);
     let regex = /S\/O \d+/;
     let result = regex.exec(frontCommentText);
+    let orderNumber = "";
     if(result){
-      let orderNumber = result[0].replace("S/O", "").trim();
+      orderNumber = result[0].replace("S/O", "").trim();
       console.log("orderNumber:", orderNumber);
     }
     
@@ -203,6 +231,7 @@ app.all('/front-comment', (req, res) => {
       if(taskResult){
         var taskId = taskResult[0].replace("com\/t\/", "").trim();
         console.log("taskId:", taskId);
+        await setTaskField(taskId, soField, orderNumber);
       }
       
     }
