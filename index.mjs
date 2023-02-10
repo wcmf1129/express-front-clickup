@@ -191,8 +191,8 @@ app.all('/front-comment', (req, res) => {
     let result = regex.exec(frontCommentText);
     if(result){
       let orderNumber = result[0].replace("S/O", "").trim();
-    }
-    console.log("orderNumber:", orderNumber);
+      console.log("orderNumber:", orderNumber);
+    }    
 
     res.send('authentication succeed');
   }else{
