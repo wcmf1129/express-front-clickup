@@ -157,9 +157,9 @@ app.all('/clickup-assign', async (req, res) => {
             })
             .catch(err => console.error(err));              
         }
-        res.send('authentication succeed')
+        res.send('authentication succeed');
     }else{
-        res.send('Unauthorized request')
+        res.send('Unauthorized request');
     }
     
 })
@@ -177,14 +177,21 @@ app.all('/front-comment', (req, res) => {
   var ip = req.socket.remoteAddress;
   console.log("Just got a request!",ip,"param:",req.params,"body:");
   console.dir(req.body, { depth: null });
-  var xSignature = req.get('X-Front-Signature');
-  console.log("X-Signature:",xSignature);
+  var xFrontSignature = req.get('X-Front-Signature');
+  console.log("X-Front-Signature:",xFrontSignature);
   var bodyString = JSON.stringify(req.body);
 
-  var validation = validateFrontSignature(req.body, xSignature, frontwhs);
+  var validation = validateFrontSignature(req.body, xFrontSignature, frontwhs);
   console.log("validation:", validation);
   
-  res.send('Yo!')
+  if(validation){
+    var frontCommentText = req.body["target"]["data"]["body"];
+    console.log("frontCommentText:", frontCommentText);
+    res.send('authentication succeed');
+  }else{
+    res.send('Unauthorized request');
+  }
+  
 })
 
 app.listen(process.env.PORT || 3000)
