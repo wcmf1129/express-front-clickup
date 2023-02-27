@@ -232,6 +232,7 @@ app.all('/front-comment', async (req, res) => {
         var taskId = taskResult[0].replace("com\/t\/", "").trim();
         console.log("taskId:", taskId);
         await setTaskField(taskId, soField, orderNumber);
+        var task = await getTask(taskId, clickupak);
       }
       
     }
