@@ -233,6 +233,11 @@ app.all('/front-comment', async (req, res) => {
         console.log("taskId:", taskId);
         await setTaskField(taskId, soField, orderNumber);
         var task = await getTask(taskId, clickupak);
+        var subtasks = task["subtasks"];
+        for(var j=0;j<subtasks.length;j++){
+          var subtaskId = subtasks[j]["id"];
+          await setTaskField(subtaskId, soField, orderNumber);
+        }
       }
       
     }
