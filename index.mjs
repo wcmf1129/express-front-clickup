@@ -215,31 +215,33 @@ app.all('/front-comment', async (req, res) => {
     var frontCommentText = req.body["target"]["data"]["body"];    
     console.log("frontCommentText:", frontCommentText);
     let regex = /S\/O \d+/;
-    let result = regex.exec(frontCommentText);
-    let orderNumber = "";
-    if(result){
-      orderNumber = result[0].replace("S/O", "").trim();
-      console.log("orderNumber:", orderNumber);
-    }
-    
-    var links = req.body["conversation"]["links"];
-    console.log("links:", links);
-    let taskRegex = /com\/t\/[a-zA-Z0-9]+/;
-    
-    for(var i=0;i<links.length;i++){
-      let taskResult = taskRegex.exec(links[i]["external_url"]);
-      if(taskResult){
-        var taskId = taskResult[0].replace("com\/t\/", "").trim();
-        console.log("taskId:", taskId);
-        await setTaskField(taskId, soField, orderNumber);
-        var task = await getTask(taskId, clickupak);
-        var subtasks = task["subtasks"];
-        for(var j=0;j<subtasks.length;j++){
-          var subtaskId = subtasks[j]["id"];
-          await setTaskField(subtaskId, soField, orderNumber);
-        }
+    if( regex.test(frontCommentText) )
+    {
+      let result = regex.exec(frontCommentText);
+      let orderNumber = "";
+      if(result){
+        orderNumber = result[0].replace("S/O", "").trim();
+        console.log("orderNumber:", orderNumber);
       }
       
+      var links = req.body["conversation"]["links"];
+      console.log("links:", links);
+      let taskRegex = /com\/t\/[a-zA-Z0-9]+/;
+      
+      for(var i=0;i<links.length;i++){
+        let taskResult = taskRegex.exec(links[i]["external_url"]);
+        if(taskResult){
+          var taskId = taskResult[0].replace("com\/t\/", "").trim();
+          console.log("taskId:", taskId);
+          await setTaskField(taskId, soField, orderNumber);
+          var task = await getTask(taskId, clickupak);
+          var subtasks = task["subtasks"];
+          for(var j=0;j<subtasks.length;j++){
+            var subtaskId = subtasks[j]["id"];
+            await setTaskField(subtaskId, soField, orderNumber);
+          }
+        }      
+      }
     }
 
     res.send('authentication succeed');
