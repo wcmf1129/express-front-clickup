@@ -157,13 +157,12 @@ app.all('/clickup-assign', async (req, res) => {
         var updatedAssignee = req.body["history_items"]["user"];
         var taskId = req.body["task_id"];
         const task = await getTask(taskId,clickupak);
-        console.log("task:",task);
-        console.log("task:",JSON.stringify(task) );
+        console.log("task:",task);        
         console.log("task id:",task["id"]);
-        console.log("task assignees:",task["assignees"]);
-        console.log("task assignees:",task.assignees);        
+        console.log("task assignees:",task["assignees"]);          
         var subtasks = task["subtasks"];
         for(var i=0;i<subtasks.length;i++){
+          console.log("subtask",i,subtasks[i]["id"],subtasks[i]["name"]);
           if( subtasks[i]["name"].toUpperCase().includes("COMM REVIEW") || subtasks[i]["name"].toUpperCase().includes("CHECK") ){
 
           }else{
@@ -203,7 +202,7 @@ app.all('/clickup-assign', async (req, res) => {
               await sdk.getConversationById({conversation_id: frontConvId})
                 .then( async ({ data }) => {
                   console.log("Front conversation:");
-                  console.dir(data,{depth:null});
+                  // console.dir(data,{depth:null});
                   for(var i=0;i<taskAssigneesEmails.length;i++){
                     var filteredTeammates = teammates.filter(x => x["email"]==taskAssigneesEmails[i]);
                     console.log(i,"matched teammate:",filteredTeammates);
