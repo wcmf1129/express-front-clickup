@@ -167,7 +167,7 @@ app.all('/clickup-assign', async (req, res) => {
 
           }else{
             var subtaskId = subtasks[i]["id"];
-            switch(req.body["history_items"]["field"]){
+            switch(req.body["history_items"][0]["field"]){
               case "assignee_add":
                 console.log("assignee_add:",subtaskId,updatedAssignee["id"]);
                 await addTaskAssignee(subtaskId, updatedAssignee["id"], clickupak);
