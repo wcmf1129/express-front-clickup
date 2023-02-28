@@ -67,7 +67,7 @@ async function getTask(taskId, clickupak) {
     console.dir(comment, { depth: null });
 
     var comments = comment["comments"];
-    let regex = /cnv_[a-zA-Z]+[^a-zA-Z]/;
+    let regex = /cnv_[a-zA-Z0-9]+/;
     for(var i=0;i<comments.length;i++){
         var commentText = comments[i]["comment_text"];
         console.log(commentText);
