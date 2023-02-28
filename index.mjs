@@ -161,24 +161,26 @@ app.all('/clickup-assign', async (req, res) => {
         console.log("task id:",task["id"]);
         console.log("task assignees:",task["assignees"]);          
         var subtasks = task["subtasks"];
-        for(var i=0;i<subtasks.length;i++){
-          console.log("subtask",i,subtasks[i]["id"],subtasks[i]["name"]);
-          if( subtasks[i]["name"].toUpperCase().includes("COMM REVIEW") || subtasks[i]["name"].toUpperCase().includes("CHECK") ){
+        if(subtasks){
+          for(var i=0;i<subtasks.length;i++){
+            console.log("subtask",i,subtasks[i]["id"],subtasks[i]["name"]);
+            if( subtasks[i]["name"].toUpperCase().includes("COMM REVIEW") || subtasks[i]["name"].toUpperCase().includes("CHECK") ){
 
-          }else{
-            var subtaskId = subtasks[i]["id"];
-            switch(req.body["history_items"][0]["field"]){
-              case "assignee_add":
-                console.log("assignee_add:",subtaskId,updatedAssignee["id"]);
-                await addTaskAssignee(subtaskId, updatedAssignee["id"], clickupak);
-                break;
-              case "assignee_rem":
-                console.log("assignee_rem:",subtaskId,updatedAssignee["id"]);
-                await removeTaskAssignee(subtaskId, updatedAssignee["id"], clickupak);
-                break;
-              default:
+            }else{
+              var subtaskId = subtasks[i]["id"];
+              switch(req.body["history_items"][0]["field"]){
+                case "assignee_add":
+                  console.log("assignee_add:",subtaskId,updatedAssignee["id"]);
+                  await addTaskAssignee(subtaskId, updatedAssignee["id"], clickupak);
+                  break;
+                case "assignee_rem":
+                  console.log("assignee_rem:",subtaskId,updatedAssignee["id"]);
+                  await removeTaskAssignee(subtaskId, updatedAssignee["id"], clickupak);
+                  break;
+                default:
 
-            }            
+              }            
+            }
           }
         }
 
