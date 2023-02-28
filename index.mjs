@@ -147,15 +147,16 @@ app.all('/clickup-assign', async (req, res) => {
     var xSignature = req.get('X-Signature');
     console.log("X-Signature:",xSignature);
     var body = JSON.stringify(req.body);
-    console.log("body:",body);
+    console.log("body text:",body);
     const hash = crypto.createHmac('sha256', clickupwhs).update(body);
     const signature = hash.digest('hex');
     console.log("hash:",hash);
     console.log("signature:",signature);
 
     if(xSignature==signature){
-        var updatedAssignee = body["history_items"]["user"];
-        const task = JSON.parse(JSON.stringify(await getTask(taskId,clickupak)));
+        var updatedAssignee = req.body["history_items"]["user"];
+        var taskId = req.body["task_id"];
+        const task = await getTask(taskId,clickupak);
         console.log("task:",task);
         console.log("task:",JSON.stringify(task) );
         console.log("task id:",task["id"]);
@@ -167,7 +168,7 @@ app.all('/clickup-assign', async (req, res) => {
 
           }else{
             var subtaskId = subtasks[i]["id"];
-            switch(body["history_items"]["field"]){
+            switch(req.body["history_items"]["field"]){
               case "assignee_add":
                 await addTaskAssignee(subtaskId, updatedAssignee, clickupak);
                 break;
