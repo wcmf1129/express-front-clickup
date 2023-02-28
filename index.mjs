@@ -297,12 +297,12 @@ app.all('/front-comment', async (req, res) => {
       
       var links = req.body["conversation"]["links"];
       console.log("links:", links);
-      let taskRegex = /com\/t\/[a-zA-Z0-9]+/;
+      let taskRegex = /\/t\/[a-zA-Z0-9]+/;
       
       for(var i=0;i<links.length;i++){
         let taskResult = taskRegex.exec(links[i]["external_url"]);
         if(taskResult){
-          var taskId = taskResult[0].replace("com\/t\/", "").trim();
+          var taskId = taskResult[0].replace("\/t\/", "").trim();
           console.log("taskId:", taskId);
           await setTaskField(taskId, soField, orderNumber);
           var task = await getTask(taskId, clickupak);
