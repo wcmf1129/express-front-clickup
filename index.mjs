@@ -83,6 +83,54 @@ async function getTask(taskId, clickupak) {
     return comment;    
   }
 
+async function addTaskAssignee(taskId, userId, clickupak) {
+  const query = new URLSearchParams({
+    // custom_task_ids: 'true',
+    // team_id: '123'
+  }).toString();
+  
+  const resp = await fetch(
+    `https://api.clickup.com/api/v2/task/${taskId}?${query}`,
+    {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: clickupak
+      },
+      body: JSON.stringify({        
+        assignees: {add: [userId]},        
+      })
+    }
+  );
+  
+  const data = await resp.json();
+  console.log("addTaskAssignee done:",data);
+}
+
+async function removeTaskAssignee(taskId, userId, clickupak) {
+  const query = new URLSearchParams({
+    // custom_task_ids: 'true',
+    // team_id: '123'
+  }).toString();
+  
+  const resp = await fetch(
+    `https://api.clickup.com/api/v2/task/${taskId}?${query}`,
+    {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: clickupak
+      },
+      body: JSON.stringify({        
+        assignees: {rem: [userId]},        
+      })
+    }
+  );
+  
+  const data = await resp.json();
+  console.log("addTaskAssignee done:",data);
+}
+
 app.all('/', (req, res) => {
     var ip = req.socket.remoteAddress;
     console.log("Just got a request!",ip,"param:",req.params,"body:");
@@ -106,14 +154,32 @@ app.all('/clickup-assign', async (req, res) => {
     console.log("signature:",signature);
 
     if(xSignature==signature){
-        var taskId = req.body["task_id"];
-
+        var updatedAssignee = body["history_items"]["user"];
         const task = JSON.parse(JSON.stringify(await getTask(taskId,clickupak)));
         console.log("task:",task);
         console.log("task:",JSON.stringify(task) );
         console.log("task id:",task["id"]);
         console.log("task assignees:",task["assignees"]);
-        console.log("task assignees:",task.assignees);
+        console.log("task assignees:",task.assignees);        
+        var subtasks = task["subtasks"];
+        for(var i=0;i<subtasks.length;i++){
+          if( subtasks[i]["name"].toUpperCase().includes("COMM REVIEW") || subtasks[i]["name"].toUpperCase().includes("CHECK") ){
+
+          }else{
+            var subtaskId = subtasks[i]["id"];
+            switch(body["history_items"]["field"]){
+              case "assignee_add":
+                await addTaskAssignee(subtaskId, updatedAssignee, clickupak);
+                break;
+              case "assignee_rem":
+                await removeTaskAssignee(subtaskId, updatedAssignee, clickupak);
+                break;
+              default:
+
+            }            
+          }
+        }
+
         var taskAssigneesEmails = []
         if(task["assignees"]){
           if(task["assignees"].length>0){
@@ -121,6 +187,7 @@ app.all('/clickup-assign', async (req, res) => {
           }
         }
         console.log("taskAssigneesEmails:", taskAssigneesEmails);
+
         var clickupComment = await getTaskComments(taskId,clickupak);
         var frontConvId = clickupComment["front_conversation_id"];
         console.log("frontConvId:",frontConvId);
