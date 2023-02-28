@@ -39,8 +39,7 @@ async function getTask(taskId, clickupak) {
     );
   
     const data = await resp.text();
-    var task = JSON.parse(data);
-    console.dir(task);
+    var task = JSON.parse(data);    
     return task;
   }
 
@@ -169,10 +168,10 @@ app.all('/clickup-assign', async (req, res) => {
             var subtaskId = subtasks[i]["id"];
             switch(req.body["history_items"]["field"]){
               case "assignee_add":
-                await addTaskAssignee(subtaskId, updatedAssignee, clickupak);
+                await addTaskAssignee(subtaskId, updatedAssignee["id"], clickupak);
                 break;
               case "assignee_rem":
-                await removeTaskAssignee(subtaskId, updatedAssignee, clickupak);
+                await removeTaskAssignee(subtaskId, updatedAssignee["id"], clickupak);
                 break;
               default:
 
