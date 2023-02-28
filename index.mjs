@@ -153,7 +153,7 @@ app.all('/clickup-assign', async (req, res) => {
     console.log("signature:",signature);
 
     if(xSignature==signature){
-        var updatedAssignee = req.body["history_items"]["user"];
+        var updatedAssignee = req.body["history_items"][0]["user"];
         console.log("updatedAssignee:",updatedAssignee);
         var taskId = req.body["task_id"];
         const task = await getTask(taskId,clickupak);
