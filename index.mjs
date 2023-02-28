@@ -153,8 +153,7 @@ app.all('/clickup-assign', async (req, res) => {
     console.log("signature:",signature);
 
     if(xSignature==signature){
-        var updatedAssignee = req.body["history_items"][0]["user"];
-        console.log("updatedAssignee:",updatedAssignee);
+        
         var taskId = req.body["task_id"];
         const task = await getTask(taskId,clickupak);
         console.log("task:",task);        
@@ -170,10 +169,14 @@ app.all('/clickup-assign', async (req, res) => {
               var subtaskId = subtasks[i]["id"];
               switch(req.body["history_items"][0]["field"]){
                 case "assignee_add":
+                  var updatedAssignee = req.body["history_items"][0]["after"];
+                  console.log("updatedAssignee:",updatedAssignee);
                   console.log("assignee_add:",subtaskId,updatedAssignee["id"]);
                   await addTaskAssignee(subtaskId, updatedAssignee["id"], clickupak);
                   break;
                 case "assignee_rem":
+                  var updatedAssignee = req.body["history_items"][0]["before"];
+                  console.log("updatedAssignee:",updatedAssignee);
                   console.log("assignee_rem:",subtaskId,updatedAssignee["id"]);
                   await removeTaskAssignee(subtaskId, updatedAssignee["id"], clickupak);
                   break;
