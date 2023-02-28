@@ -214,13 +214,13 @@ app.all('/front-comment', async (req, res) => {
   if(validation){
     var frontCommentText = req.body["target"]["data"]["body"];    
     console.log("frontCommentText:", frontCommentText);
-    let regex = /S\/O \d+/;
+    let regex = /\**S\/O Number:\** \d+/;
     if( regex.test(frontCommentText) )
     {
       let result = regex.exec(frontCommentText);
       let orderNumber = "";
       if(result){
-        orderNumber = result[0].replace("S/O", "").trim();
+        orderNumber = result[0].replace(/\**S\/O Number:\** /, "").trim();
         console.log("orderNumber:", orderNumber);
       }
       
