@@ -163,7 +163,7 @@ app.all('/clickup-assign', async (req, res) => {
         if(subtasks){
           for(var i=0;i<subtasks.length;i++){
             console.log("subtask",i,subtasks[i]["id"],subtasks[i]["name"]);
-            if( subtasks[i]["name"].toUpperCase().includes("COMM REVIEW") || subtasks[i]["name"].toUpperCase().includes("CHECK") ){
+            if( subtasks[i]["name"].toUpperCase().includes("COMM REVIEW") || subtasks[i]["name"].toUpperCase().includes("COMMERCIAL REVIEW") || subtasks[i]["name"].toUpperCase().includes("CHECK") ){
 
             }else{
               var subtaskId = subtasks[i]["id"];
