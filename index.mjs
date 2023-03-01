@@ -290,6 +290,7 @@ app.all('/front-comment', async (req, res) => {
     console.log("frontCommentText:", frontCommentText);
     let regex = /\**S\/O Number:\** \d+/;
     console.log("so pattern match:", regex.test(frontCommentText) );
+    console.log("so pattern2 match:", /\**S\/O Number:\**/.test(frontCommentText) );
     if( regex.test(frontCommentText) )
     {
       let result = regex.exec(frontCommentText);
