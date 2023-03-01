@@ -288,7 +288,7 @@ app.all('/front-comment', async (req, res) => {
   if(validation){
     var frontCommentText = req.body["target"]["data"]["body"];    
     console.log("frontCommentText:", frontCommentText);
-    let regex = /\**S\/O Number:\** \d+/;
+    let regex = /\**S\/O Number:\**\s\d+/;
     console.log("so pattern match:", regex.test(frontCommentText) );
     console.log("so pattern2 match:", /\**S\/O Number:\**/.test(frontCommentText) );
     if( regex.test(frontCommentText) )
