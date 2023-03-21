@@ -346,8 +346,8 @@ app.all('/clickup-comment-post', (req, res) => {
       console.log("comments:",comments);
       var frontConv = "";
       for(var i=0;i<comments.length;i++){
-        console.log(`comment ${i}: ${comments[i]}`);
-        const match = comments[i].match( /\/cnv_[a-zA-Z0-9]+/ );
+        console.log(`comment ${i}: ${comments[i]["text"]}`);
+        const match = comments[i]["text"].match( /\/cnv_[a-zA-Z0-9]+/ );
         if (match !== null) {
           frontConv = match[0].substring(1);
           break;
