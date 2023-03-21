@@ -344,6 +344,19 @@ app.all('/clickup-comment-post', (req, res) => {
     if(xSignature==signature){
       var comments = req.body["history_items"][0]["comment"]["comment"];
       console.log("comments:",comments);
+      var frontConv = "";
+      for(var i=0;i<comments.length;i++){
+        console.log(`comment ${i}: ${comments[i]}`);
+        const match = comments[i].match( /\/cnv_[a-zA-Z0-9]+/ );
+        if (match !== null) {
+          frontConv = match[0].substring(1);
+          break;
+        } 
+      }
+      console.log(`frontConv: ${frontConv}`);
+      if(frontConv!=""){
+
+      }
       res.send('authentication succeed');
     }else{
       res.send('Unauthorized request');
