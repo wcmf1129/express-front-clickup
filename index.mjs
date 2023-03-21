@@ -11,6 +11,7 @@ const crypto = require('crypto');
 
 const clickupak = process.env.clickupak;
 const clickupwhs = process.env.clickupwhs;
+const clickupwhsCommentPost = process.env.clickupwhsCommentPost;
 const frontak = process.env.frontak;
 const frontwhs = process.env.frontwhs;
 const soField = process.env.sofield;
@@ -324,6 +325,28 @@ app.all('/front-comment', async (req, res) => {
     res.send('Unauthorized request');
   }
   
+})
+
+app.all('/clickup-comment-post', (req, res) => {
+  var ip = req.socket.remoteAddress;
+    console.log("clickup-comment-post",ip,"param:",req.params,"body:");
+    console.log("clickupak.length:", clickupak.length);
+    console.dir(req.body, { depth: null });
+    var xSignature = req.get('X-Signature');
+    console.log("X-Signature:",xSignature);
+    var body = JSON.stringify(req.body);
+    console.log("body text:",body);
+    const hash = crypto.createHmac('sha256', clickupwhsCommentPost).update(body);
+    const signature = hash.digest('hex');
+    console.log("hash:",hash);
+    console.log("signature:",signature);
+
+    if(xSignature==signature){
+      res.send('authentication succeed');
+    }else{
+      res.send('Unauthorized request');
+    }
+  res.send('Yo!')
 })
 
 app.listen(process.env.PORT || 3000)
