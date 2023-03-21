@@ -295,7 +295,7 @@ app.all('/front-comment', async (req, res) => {
       let result = regex.exec(frontCommentText);
       let orderNumber = "";
       if(result){
-        orderNumber = result[0].replace(/\**S\/O Number:\**\s/, "").trim();
+        orderNumber = result[0].replace(/\**S\/O Number:\**\s+/, "").trim();
         console.log("orderNumber:", orderNumber);
       }
       
