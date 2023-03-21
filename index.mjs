@@ -342,7 +342,7 @@ app.all('/clickup-comment-post', (req, res) => {
     console.log("signature:",signature);
 
     if(xSignature==signature){
-      var comments = req.body["history_items"]["comment"]["comment"];
+      var comments = req.body["history_items"][0]["comment"]["comment"];
       console.log("comments:",comments);
       res.send('authentication succeed');
     }else{
