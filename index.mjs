@@ -345,8 +345,7 @@ app.all('/clickup-comment-post', (req, res) => {
       res.send('authentication succeed');
     }else{
       res.send('Unauthorized request');
-    }
-  res.send('Yo!')
+    }  
 })
 
 app.listen(process.env.PORT || 3000)
