@@ -355,6 +355,12 @@ app.all('/clickup-comment-post', (req, res) => {
       }
       console.log(`frontConv: ${frontConv}`);
       if(frontConv!=""){
+        sdk.auth(frontak);
+        sdk.getConversationById({conversation_id: frontConv})
+          .then(({ data }) => {
+            console.dir(data,{depth:null});            
+          })
+          .catch(err => console.error(err));
 
       }
       res.send('authentication succeed');
