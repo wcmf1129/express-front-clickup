@@ -334,14 +334,16 @@ app.all('/clickup-comment-post', (req, res) => {
     console.dir(req.body, { depth: null });
     var xSignature = req.get('X-Signature');
     console.log("X-Signature:",xSignature);
-    var body = JSON.stringify(req.body);
-    console.log("body text:",body);
-    const hash = crypto.createHmac('sha256', clickupwhsCommentPost).update(body);
+    var bodyText = JSON.stringify(req.body);
+    console.log("body text:",bodyText);
+    const hash = crypto.createHmac('sha256', clickupwhsCommentPost).update(bodyText);
     const signature = hash.digest('hex');
     console.log("hash:",hash);
     console.log("signature:",signature);
 
     if(xSignature==signature){
+      var comments = req.body["history_items"]["comment"]["comment"];
+      console.log("comments:",comments);
       res.send('authentication succeed');
     }else{
       res.send('Unauthorized request');
