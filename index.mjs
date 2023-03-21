@@ -327,7 +327,7 @@ app.all('/front-comment', async (req, res) => {
   
 })
 
-app.all('/clickup-comment-post', (req, res) => {
+app.all('/clickup-comment-post', async (req, res) => {
   var ip = req.socket.remoteAddress;
     console.log("clickup-comment-post",ip,"param:",req.params,"body:");
     console.log("clickupak.length:", clickupak.length);
@@ -355,8 +355,8 @@ app.all('/clickup-comment-post', (req, res) => {
       }
       console.log(`frontConv: ${frontConv}`);
       if(frontConv!=""){
-        sdk.auth(frontak);
-        sdk.getConversationById({conversation_id: frontConv})
+        await sdk.auth(frontak);
+        await sdk.getConversationById({conversation_id: frontConv})
           .then(({ data }) => {
             console.dir(data,{depth:null});            
           })
