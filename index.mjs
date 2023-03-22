@@ -371,8 +371,7 @@ app.all('/clickup-comment-post', async (req, res) => {
           frontConv = match[0].substring(1);
           break;
         } 
-      }
-      frontConv = tConvId;
+      }      
       console.log(`frontConv: ${frontConv}`);
       if(frontConv!=""){
         await sdk.auth(frontak);
@@ -398,14 +397,9 @@ app.all('/clickup-comment-post', async (req, res) => {
                   if(data["account"]!=null){                    
                     if( "custom_fields" in data["account"] ){
                       if( "Account #" in data["account"]["custom_fields"]){
-                        var accountNumber = data["account"]["custom_fields"]["Account #"];
-
-                        var customFields = await getCustomFields(itListId);
-                        console.log(`customFields:`);
-                        console.dir(customFields, {depth:null});
-                        var task = await getTask(taskId, clickupak);
-                        console.log(`task:`);
-                        console.dir(task, {depth:null});
+                        var accountNumber = data["account"]["custom_fields"]["Account #"];                        
+                        
+                        var task = await getTask(taskId, clickupak);                        
                         var customerFieldsList = task["custom_fields"].filter( x => x["name"]=="CUSTOMER");
                         if( customerFieldsList.length>0 ){
                           var customerField = customerFieldsList[0];
