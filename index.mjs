@@ -362,8 +362,10 @@ app.all('/clickup-comment-post', async (req, res) => {
             var recipientHandle = recipient["handle"];
             console.log(`recipientHandle: ${recipientHandle}`);
             if( recipientHandle.includes(rsDomain) ){
+              
+            }else{              
 
-            }else{
+            }
               var recipientLink = recipient["_links"]["related"]["contact"];
               var match = recipientLink.match( /\/crd_[a-zA-Z0-9]+/ );
               if( match != null ){
@@ -375,8 +377,6 @@ app.all('/clickup-comment-post', async (req, res) => {
                 })
                 .catch(err => console.error(err));
               }
-
-            }
           })
           .catch(err => console.error(err));
 
