@@ -342,8 +342,7 @@ async function getCustomFields(listId) {
     }
   );
 
-  const data = JSON.parse( await resp.text() );
-  console.log(data);
+  const data = JSON.parse( await resp.text() );  
   return data;
 }
 
@@ -361,6 +360,7 @@ app.all('/clickup-comment-post', async (req, res) => {
     console.log("signature:",signature);
 
     if(xSignature==signature){
+      var taskId = req.body["task_id"];
       var comments = req.body["history_items"][0]["comment"]["comment"];
       console.log("comments:",comments);
       var frontConv = "";
@@ -399,8 +399,23 @@ app.all('/clickup-comment-post', async (req, res) => {
                     if( "custom_fields" in data["account"] ){
                       if( "Account #" in data["account"]["custom_fields"]){
                         var accountNumber = data["account"]["custom_fields"]["Account #"];
+
                         var customFields = await getCustomFields(itListId);
-                        console.log(`customFields: ${customFields}`);
+                        console.log(`customFields:`);
+                        console.dir(customFields, {depth:null});
+                        var task = await getTask(taskId);
+                        console.log(`task:`);
+                        console.dir(task, {depth:null});
+                        var customerFieldsList = task["custom_fields"].filter( x => x["name"]=="CUSTOMER");
+                        if( customerFieldsList.length>0 ){
+                          var customerField = customerFieldsList[0];
+                          var options = customerField["type_config"]["options"];
+                          var matchOptions = options.filter( x => x["name"].includes(accountNumber) );
+                          if(matchOptions.length>0){
+                            console.log(`matchOptions: ${matchOptions}`);
+                          }
+                        }
+
                       }
                     }
                   }
