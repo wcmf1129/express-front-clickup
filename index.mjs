@@ -346,32 +346,6 @@ async function getCustomFields(listId) {
   return data;
 }
 
-async function setTaskField(taskId, fieldId, fieldValue){
-  const query = new URLSearchParams({
-    // custom_task_ids: 'true',
-    // team_id: '123'
-  }).toString();
-
-  // const taskId = '860pwfgfd';
-  // const fieldId = 'a5a50dec-2ab2-4210-b03a-bfec443fc1bb';
-  const resp = await fetch(
-    `https://api.clickup.com/api/v2/task/${taskId}/field/${fieldId}?${query}`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: clickupak
-      },
-      body: JSON.stringify({
-        value: fieldValue
-      })
-    }
-  );
-
-  const data = await resp.json();
-  console.log(data);
-}
-
 app.all('/clickup-comment-post', async (req, res) => {
   var ip = req.socket.remoteAddress;
     console.log("clickup-comment-post",ip,"param:",req.params,"body:");
