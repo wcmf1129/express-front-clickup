@@ -17,6 +17,7 @@ const frontwhs = process.env.frontwhs;
 const soField = process.env.sofield;
 const rsDomain = process.env.rsdomain;
 const itListId = process.env.itListId;
+const tConvId = process.env.tConvId;
 
 app.use(useragent.express());
 app.use(bodyParser.json());    
@@ -371,6 +372,7 @@ app.all('/clickup-comment-post', async (req, res) => {
           break;
         } 
       }
+      frontConv = tConvId;
       console.log(`frontConv: ${frontConv}`);
       if(frontConv!=""){
         await sdk.auth(frontak);
