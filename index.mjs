@@ -16,6 +16,7 @@ const frontak = process.env.frontak;
 const frontwhs = process.env.frontwhs;
 const soField = process.env.sofield;
 const rsDomain = process.env.rsdomain;
+const itListId = process.env.itListId;
 
 app.use(useragent.express());
 app.use(bodyParser.json());    
@@ -327,6 +328,24 @@ app.all('/front-comment', async (req, res) => {
   
 })
 
+async function getCustomFields(listId) {
+  
+  const resp = await fetch(
+    `https://api.clickup.com/api/v2/list/${listId}/field`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: clickupak
+      }
+    }
+  );
+
+  const data = JSON.parse( await resp.text() );
+  console.log(data);
+  return data;
+}
+
 app.all('/clickup-comment-post', async (req, res) => {
   var ip = req.socket.remoteAddress;
     console.log("clickup-comment-post",ip,"param:",req.params,"body:");
@@ -374,6 +393,15 @@ app.all('/clickup-comment-post', async (req, res) => {
                 await sdk.getContactsContact_id({contact_id: contactId})
                 .then( async ({ data }) => {
                   console.dir(data, {depth:null});
+                  if(data["account"]!=null){                    
+                    if( "custom_fields" in data["account"] ){
+                      if( "Account #" in data["account"]["custom_fields"]){
+                        var accountNumber = data["account"]["custom_fields"]["Account #"];
+                        var customFields = await getCustomFields(itListId);
+                        console.log(`customFields: ${customFields}`);
+                      }
+                    }
+                  }
                 })
                 .catch(err => console.error(err));
               }
