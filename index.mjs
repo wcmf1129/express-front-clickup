@@ -412,7 +412,9 @@ app.all('/clickup-comment-post', async (req, res) => {
                           var options = customerField["type_config"]["options"];
                           var matchOptions = options.filter( x => x["name"].includes(accountNumber) );
                           if(matchOptions.length>0){
-                            console.log(`matchOptions: ${matchOptions}`);
+                            console.log(`matchOption:`);
+                            console.dir(matchOptions[0], {depth:null});
+
                           }
                         }
 
