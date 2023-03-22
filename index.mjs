@@ -368,7 +368,8 @@ app.all('/clickup-comment-post', async (req, res) => {
               var match = recipientLink.match( /\/crd_[a-zA-Z0-9]+/ );
               if( match != null ){
                 var contactId = match.substring(1);
-                await sdk.getContacts()
+                console.log(`contactId: ${contactId}`);
+                await sdk.getContacts(contactId)
                 .then( async ({ data }) => {
                     console.log(data);                    
                 })
