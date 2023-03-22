@@ -15,6 +15,7 @@ const clickupwhsCommentPost = process.env.clickupwhsCommentPost;
 const frontak = process.env.frontak;
 const frontwhs = process.env.frontwhs;
 const soField = process.env.sofield;
+const rsDomain = process.env.rsdomain;
 
 app.use(useragent.express());
 app.use(bodyParser.json());    
@@ -146,8 +147,7 @@ app.all('/clickup-assign', async (req, res) => {
     console.dir(req.body, { depth: null });
     var xSignature = req.get('X-Signature');
     console.log("X-Signature:",xSignature);
-    var body = JSON.stringify(req.body);
-    console.log("body text:",body);
+    var body = JSON.stringify(req.body);    
     const hash = crypto.createHmac('sha256', clickupwhs).update(body);
     const signature = hash.digest('hex');
     console.log("hash:",hash);
@@ -334,8 +334,7 @@ app.all('/clickup-comment-post', async (req, res) => {
     console.dir(req.body, { depth: null });
     var xSignature = req.get('X-Signature');
     console.log("X-Signature:",xSignature);
-    var bodyText = JSON.stringify(req.body);
-    console.log("body text:",bodyText);
+    var bodyText = JSON.stringify(req.body);    
     const hash = crypto.createHmac('sha256', clickupwhsCommentPost).update(bodyText);
     const signature = hash.digest('hex');
     console.log("hash:",hash);
@@ -347,7 +346,7 @@ app.all('/clickup-comment-post', async (req, res) => {
       var frontConv = "";
       for(var i=0;i<comments.length;i++){
         console.log(`comment ${i}: ${comments[i]["text"]}`);
-        const match = comments[i]["text"].match( /\/cnv_[a-zA-Z0-9]+/ );
+        var match = comments[i]["text"].match( /\/cnv_[a-zA-Z0-9]+/ );
         if (match !== null) {
           frontConv = match[0].substring(1);
           break;
@@ -357,8 +356,26 @@ app.all('/clickup-comment-post', async (req, res) => {
       if(frontConv!=""){
         await sdk.auth(frontak);
         await sdk.getConversationById({conversation_id: frontConv})
-          .then(({ data }) => {
-            console.dir(data,{depth:null});            
+          .then( async ({ data }) => {
+            console.dir(data,{depth:null});
+            var recipient = data["recipient"];
+            var recipientHandle = recipient["handle"];
+            console.log(`recipientHandle: ${recipientHandle}`);
+            if( recipientHandle.includes(rsDomain) ){
+
+            }else{
+              var recipientLink = recipient["_links"]["related"]["contact"];
+              var match = recipientLink.match( /\/crd_[a-zA-Z0-9]+/ );
+              if( match != null ){
+                var contactId = match.substring(1);
+                sdk.getContacts()
+                .then( async ({ data }) => {
+                    console.log(data);                    
+                })
+                .catch(err => console.error(err));
+              }
+
+            }
           })
           .catch(err => console.error(err));
 
