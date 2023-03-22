@@ -346,6 +346,32 @@ async function getCustomFields(listId) {
   return data;
 }
 
+async function setTaskField(taskId, fieldId, fieldValue){
+  const query = new URLSearchParams({
+    // custom_task_ids: 'true',
+    // team_id: '123'
+  }).toString();
+
+  // const taskId = '860pwfgfd';
+  // const fieldId = 'a5a50dec-2ab2-4210-b03a-bfec443fc1bb';
+  const resp = await fetch(
+    `https://api.clickup.com/api/v2/task/${taskId}/field/${fieldId}?${query}`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: clickupak
+      },
+      body: JSON.stringify({
+        value: fieldValue
+      })
+    }
+  );
+
+  const data = await resp.json();
+  console.log(data);
+}
+
 app.all('/clickup-comment-post', async (req, res) => {
   var ip = req.socket.remoteAddress;
     console.log("clickup-comment-post",ip,"param:",req.params,"body:");
@@ -409,12 +435,14 @@ app.all('/clickup-comment-post', async (req, res) => {
                         var customerFieldsList = task["custom_fields"].filter( x => x["name"]=="CUSTOMER");
                         if( customerFieldsList.length>0 ){
                           var customerField = customerFieldsList[0];
+                          var filedId = customerField["id"];
                           var options = customerField["type_config"]["options"];
                           var matchOptions = options.filter( x => x["name"].includes(accountNumber) );
                           if(matchOptions.length>0){
                             console.log(`matchOption:`);
                             console.dir(matchOptions[0], {depth:null});
-
+                            var valueID = matchOptions[0]["id"];
+                            await setTaskField(taskId, filedId, valueID);
                           }
                         }
 
