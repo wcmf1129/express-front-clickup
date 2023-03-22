@@ -371,9 +371,9 @@ app.all('/clickup-comment-post', async (req, res) => {
               if( match != null ){
                 var contactId = match[0].substring(1);
                 console.log(`contactId: ${contactId}`);
-                await sdk.getContacts(contactId)
+                await sdk.getContactsContact_id({contact_id: contactId})
                 .then( async ({ data }) => {
-                    console.log(data);                    
+                  console.dir(data, {depth:null});
                 })
                 .catch(err => console.error(err));
               }
