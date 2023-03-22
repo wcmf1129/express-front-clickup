@@ -403,7 +403,7 @@ app.all('/clickup-comment-post', async (req, res) => {
                         var customFields = await getCustomFields(itListId);
                         console.log(`customFields:`);
                         console.dir(customFields, {depth:null});
-                        var task = await getTask(taskId);
+                        var task = await getTask(taskId, clickupak);
                         console.log(`task:`);
                         console.dir(task, {depth:null});
                         var customerFieldsList = task["custom_fields"].filter( x => x["name"]=="CUSTOMER");
