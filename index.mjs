@@ -460,6 +460,7 @@ app.all('/clickup-task-updated', async (req, res) => {
               var frontConvId = clickupComment["front_conversation_id"];
               console.log("frontConvId:",frontConvId);
               if(frontConvId){
+                await sdk.auth(frontak);
                 await sdk.getTags()
                 .then(async ({ data }) => {
                   console.log("tags");
