@@ -460,7 +460,15 @@ app.all('/clickup-task-updated', async (req, res) => {
               var frontConvId = clickupComment["front_conversation_id"];
               console.log("frontConvId:",frontConvId);
               if(frontConvId){
-
+                await sdk.getTags()
+                .then(async ({ data }) => {
+                  console.log("tags");
+                  console.dir(data, {depth:null});
+                })
+                .catch(err => console.error(err));
+                // await sdk.postConversationsConversation_idTags({tag_ids: ['cp']}, {conversation_id: frontConvId})
+                // .then(({ data }) => console.log(data))
+                // .catch(err => console.error(err));
               }
             }
           }
