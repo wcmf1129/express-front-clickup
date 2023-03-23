@@ -445,6 +445,27 @@ app.all('/clickup-task-updated', async (req, res) => {
     console.log("signature:",signature);
 
     if(xSignature==signature){
+      var taskId = req.body["task_id"];
+      var field = req.body["history_items"][0]["field"];
+      if( field == "custom_field" ){
+        var fieldName = req.body["history_items"][0]["custom_field"]["name"];
+        if( fieldName == "COMPLETE"){
+          var afterId = req.body["history_items"][0]["after"];
+          var completeOptions = req.body["history_items"][0]["custom_field"]["type_config"]["options"].filter( x => x["name"]=="COMPLETE");
+          if( completeOptions.length>0 ){
+            var completeOptionId = completeOptions[0]["id"];
+            console.log(`afterId:${afterId} completeOptionId:${completeOptionId} `);
+            if( afterId == completeOptionId ){
+              var clickupComment = await getTaskComments(taskId,clickupak);
+              var frontConvId = clickupComment["front_conversation_id"];
+              console.log("frontConvId:",frontConvId);
+              if(frontConvId){
+
+              }
+            }
+          }
+        }
+      }
       
       
       res.send('authentication succeed');
