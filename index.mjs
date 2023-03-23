@@ -19,6 +19,7 @@ const soField = process.env.sofield;
 const rsDomain = process.env.rsdomain;
 const itListId = process.env.itListId;
 const tConvId = process.env.tConvId;
+const frontCompletedTagId = process.env.frontCompletedTagId;
 
 app.use(useragent.express());
 app.use(bodyParser.json());    
@@ -460,16 +461,10 @@ app.all('/clickup-task-updated', async (req, res) => {
               var frontConvId = clickupComment["front_conversation_id"];
               console.log("frontConvId:",frontConvId);
               if(frontConvId){
-                await sdk.auth(frontak);
-                await sdk.getTags()
-                .then(async ({ data }) => {
-                  console.log("tags");
-                  console.dir(data, {depth:null});
-                })
+                await sdk.auth(frontak);                              
+                await sdk.postConversationsConversation_idTags({tag_ids: [frontCompletedTagId]}, {conversation_id: frontConvId})
+                .then(({ data }) => console.log(data))
                 .catch(err => console.error(err));
-                // await sdk.postConversationsConversation_idTags({tag_ids: ['cp']}, {conversation_id: frontConvId})
-                // .then(({ data }) => console.log(data))
-                // .catch(err => console.error(err));
               }
             }
           }
