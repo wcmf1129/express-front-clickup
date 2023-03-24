@@ -480,4 +480,27 @@ app.all('/clickup-task-updated', async (req, res) => {
     }  
 })
 
+app.all('/clickup-test', async (req, res) => {
+  var ip = req.socket.remoteAddress;
+    console.log("clickup-comment-post",ip,"param:",req.params,"body:");
+    console.log("clickupak.length:", clickupak.length);
+    console.dir(req.body, { depth: null });
+    var xSignature = req.get('X-Signature');
+    console.log("X-Signature:",xSignature);
+    var bodyText = JSON.stringify(req.body);    
+    const hash = crypto.createHmac('sha256', clickupwhsTaskUpdated).update(bodyText);
+    const signature = hash.digest('hex');
+    console.log("hash:",hash);
+    console.log("signature:",signature);
+
+    if(xSignature==signature){
+      
+      
+      
+      res.send('authentication succeed');
+    }else{
+      res.send('Unauthorized request');
+    }  
+})
+
 app.listen(process.env.PORT || 3000)
