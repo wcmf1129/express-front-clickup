@@ -264,6 +264,26 @@ app.all('/front-assign', async (req, res) => {
   
 })
 
+app.all('/front-assignee-removed', async (req, res) => {
+  var ip = req.socket.remoteAddress;
+  console.log("Just got a request!",ip,"param:",req.params,"body:");
+  console.dir(req.body, { depth: null });
+  var xFrontSignature = req.get('X-Front-Signature');
+  console.log("X-Front-Signature:",xFrontSignature);
+  var bodyString = JSON.stringify(req.body);
+
+  var validation = validateFrontSignature(req.body, xFrontSignature, frontwhs);
+  console.log("validation:", validation);
+  
+  if(validation){
+    
+    res.send('authentication succeed');
+  }else{
+    res.send('Unauthorized request');
+  }
+  
+})
+
 
 function validateFrontSignature(data, signature, apiSecret) {
   var hash = crypto.createHmac('sha1', apiSecret)
