@@ -300,9 +300,8 @@ app.all('/front-assign', async (req, res) => {
         var listId = task["list"]["id"];
         console.log("list",listId);
         if( memberId=='' ){
-          var listMembers = await getListMembers(listId);
-          console.log("listMembers",listMembers);
-          var matchMembers = listMembers.filter( x => x["email"]==assigneeEmail );
+          var listMembers = await getListMembers(listId);          
+          var matchMembers = listMembers["members"].filter( x => x["email"]==assigneeEmail );
           if( matchMembers.length>0 ){
             memberId = matchMembers[0]["id"];
             await addTaskAssignee(taskId, memberId, clickupak);
