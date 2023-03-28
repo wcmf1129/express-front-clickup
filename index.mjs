@@ -310,7 +310,7 @@ app.all('/front-assign', async (req, res) => {
         console.log("subtasks",subtasks);
         for ( var subtask of subtasks){
           console.log("subtask",subtask);
-          if( subtasks[i]["name"].toUpperCase().includes("COMM REVIEW") || subtasks[i]["name"].toUpperCase().includes("COMMERCIAL REVIEW") || subtasks[i]["name"].toUpperCase().includes("CHECK") ){
+          if( subtask["name"].toUpperCase().includes("COMM REVIEW") || subtask["name"].toUpperCase().includes("COMMERCIAL REVIEW") || subtask["name"].toUpperCase().includes("CHECK") ){
 
           }else{
             await addTaskAssignee(subtask["id"], memberId, clickupak);
