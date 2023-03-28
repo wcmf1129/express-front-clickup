@@ -277,13 +277,13 @@ app.all('/front-assign', async (req, res) => {
       var assignee = req.body["conversation"]["assignee"];
       var asigneeEmail = assignee["email"];
       var taskIds = getTaskIdsFromFrontConversation(req.body);
-      taskIds.forEach( async (taskId) => {
-        // await addTaskAssignee(taskId, updatedAssignee["id"], clickupak);
+      for(var i=0;i<taskIds.length;i++){
+        var taskId = taskIds[i];
         console.log("taskId:",taskId);
         var task = await getTask(taskId,clickupak);
         console.log("task",taskId);
         console.dir(task, {depth:null});
-      });
+      }      
     }
     res.send('authentication succeed');
   }else{
