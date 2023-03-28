@@ -308,7 +308,7 @@ app.all('/front-assign', async (req, res) => {
         }
         var subtasks = task["subtasks"];
         console.log("subtasks",subtasks);
-        for ( var subtask in subtasks){
+        for ( var subtask of subtasks){
           console.log("subtask",subtask);
           await addTaskAssignee(subtask["id"], memberId, clickupak);
         }
