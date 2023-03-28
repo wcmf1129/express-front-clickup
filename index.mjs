@@ -247,17 +247,14 @@ app.all('/clickup-assign', async (req, res) => {
 function getTaskIdsFromFrontConversation(reqBody){
   var taskIds = [];
   for( var i=0;i<reqBody["conversation"]["links"].length;i++){
-    var url = reqBody["conversation"]["links"][i]["external_url"];
-    console.log(url);
+    var url = reqBody["conversation"]["links"][i]["external_url"];    
     let taskRegex = /\/t\/[a-zA-Z0-9]+/;
-    let taskResult = taskRegex.exec(url);
-    console.log("taskResult",taskResult);
+    let taskResult = taskRegex.exec(url);    
     if(taskResult){
       var taskId = taskResult[0].replace("\/t\/", "").trim();      
       taskIds.push(taskId);
     }
-  }
-  console.log("taskIds",taskIds);
+  }  
   return taskIds;
 }
 
@@ -304,7 +301,7 @@ app.all('/front-assign', async (req, res) => {
         console.log("list",listId);
         if( memberId=='' ){
           var listMembers = await getListMembers(listId);
-          console.log("list members",listMembers);
+          
           var matchMembers = listMembers.filter( x => x["email"]==assigneeEmail );
           if( matchMembers.length>0 ){
             memberId = matchMembers[0]["id"];
