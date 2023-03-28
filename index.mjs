@@ -301,7 +301,7 @@ app.all('/front-assign', async (req, res) => {
         console.log("list",listId);
         if( memberId=='' ){
           var listMembers = await getListMembers(listId);
-          
+          console.log("listMembers",listMembers);
           var matchMembers = listMembers.filter( x => x["email"]==assigneeEmail );
           if( matchMembers.length>0 ){
             memberId = matchMembers[0]["id"];
