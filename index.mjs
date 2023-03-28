@@ -248,6 +248,7 @@ function getTaskIdsFromFrontConversation(reqBody){
   var taskIds = [];
   for( var i=0;i<reqBody["links"].length;i++){
     var url = reqBody["links"][i]["external_url"];
+    console.log(url);
     let taskRegex = /\/t\/[a-zA-Z0-9]+/;
     let taskResult = taskRegex.exec(links[i]["external_url"]);
     if(taskResult){
