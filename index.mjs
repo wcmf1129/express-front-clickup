@@ -244,6 +244,20 @@ app.all('/clickup-assign', async (req, res) => {
     
 })
 
+function getTaskIdsFromFrontConversation(reqBody){
+  var taskIds = [];
+  for( var i=0;i<reqBody["links"].length;i++){
+    var url = reqBody["links"][i]["external_url"];
+    let taskRegex = /\/t\/[a-zA-Z0-9]+/;
+    let taskResult = taskRegex.exec(links[i]["external_url"]);
+    if(taskResult){
+      var taskId = taskResult[0].replace("\/t\/", "").trim();      
+      taskIds.push(taskId);
+    }
+  }
+  return taskIds;
+}
+
 app.all('/front-assign', async (req, res) => {
   var ip = req.socket.remoteAddress;
   console.log("Just got a request!",ip,"param:",req.params,"body:");
@@ -256,7 +270,17 @@ app.all('/front-assign', async (req, res) => {
   console.log("validation:", validation);
   
   if(validation){
-    
+    if( req.body["conversation"]["assignee"]!=null ){
+      var assignee = req.body["conversation"]["assignee"];
+      var asigneeEmail = assignee["email"];
+      var taskIds = getTaskIdsFromFrontConversation(req.body);
+      taskIds.forEach( async taskId => {
+        // await addTaskAssignee(taskId, updatedAssignee["id"], clickupak);
+        var task = await getTask(taskId,clickupak);
+        console.log("task",taskId);
+        console.dir(task, {depth:null});
+      });
+    }
     res.send('authentication succeed');
   }else{
     res.send('Unauthorized request');
