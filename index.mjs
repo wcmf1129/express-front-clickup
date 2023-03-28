@@ -277,7 +277,7 @@ app.all('/front-assign', async (req, res) => {
       var assignee = req.body["conversation"]["assignee"];
       var asigneeEmail = assignee["email"];
       var taskIds = getTaskIdsFromFrontConversation(req.body);
-      taskIds.forEach( async taskId => {
+      taskIds.forEach( async (taskId) => {
         // await addTaskAssignee(taskId, updatedAssignee["id"], clickupak);
         console.log("taskId:",taskId);
         var task = await getTask(taskId,clickupak);
