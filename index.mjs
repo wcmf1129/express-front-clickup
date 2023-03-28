@@ -291,8 +291,9 @@ app.all('/front-assign', async (req, res) => {
   if(validation){
     if( req.body["conversation"]["assignee"]!=null ){
       var assignee = req.body["conversation"]["assignee"];
-      var asigneeEmail = assignee["email"];
+      var assigneeEmail = assignee["email"];
       var taskIds = getTaskIdsFromFrontConversation(req.body);
+      var memberId = "";
       for(var i=0;i<taskIds.length;i++){
         var taskId = taskIds[i];
         console.log("taskId:",taskId);
@@ -301,8 +302,19 @@ app.all('/front-assign', async (req, res) => {
         console.dir(task, {depth:null});
         var listId = task["list"]["id"];
         console.log("list",listId);
-        var listMembers = await getListMembers(listId);
-        console.log("list members",listMembers);
+        if( memberId=='' ){
+          var listMembers = await getListMembers(listId);
+          console.log("list members",listMembers);
+          var matchMembers = listMembers.filter( x => x["email"]==assigneeEmail );
+          if( matchMembers.length>0 ){
+            memberId = matchMembers[0]["id"];
+            await addTaskAssignee(taskId, memberId, clickupak);
+          }
+        }
+        var subtasks = task["subtasks"];
+        for ( var subtask in subtasks){
+          await addTaskAssignee(subtask["id"], memberId, clickupak);
+        }
       }      
     }
     res.send('authentication succeed');
