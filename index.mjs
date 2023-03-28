@@ -247,10 +247,10 @@ app.all('/clickup-assign', async (req, res) => {
 function getTaskIdsFromFrontConversation(reqBody){
   var taskIds = [];
   for( var i=0;i<reqBody["links"].length;i++){
-    var url = reqBody["links"][i]["external_url"];
+    var url = reqBody["conversation"]["links"][i]["external_url"];
     console.log(url);
     let taskRegex = /\/t\/[a-zA-Z0-9]+/;
-    let taskResult = taskRegex.exec(links[i]["external_url"]);
+    let taskResult = taskRegex.exec(url);
     if(taskResult){
       var taskId = taskResult[0].replace("\/t\/", "").trim();      
       taskIds.push(taskId);
