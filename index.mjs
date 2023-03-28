@@ -261,6 +261,22 @@ function getTaskIdsFromFrontConversation(reqBody){
   return taskIds;
 }
 
+async function getListMembers(listId) {
+  
+  const resp = await fetch(
+    `https://api.clickup.com/api/v2/list/${listId}/member`,
+    {
+      method: 'GET',
+      headers: {
+        Authorization: 'YOUR_API_KEY_HERE'
+      }
+    }
+  );
+
+  const data = JSON.parse( await resp.text() );  
+  return data;
+}
+
 app.all('/front-assign', async (req, res) => {
   var ip = req.socket.remoteAddress;
   console.log("Just got a request!",ip,"param:",req.params,"body:");
@@ -283,6 +299,10 @@ app.all('/front-assign', async (req, res) => {
         var task = await getTask(taskId,clickupak);
         console.log("task",taskId);
         console.dir(task, {depth:null});
+        var listId = task["list"]["id"];
+        console.log("list",listId);
+        var listMembers = await getListMembers(listId);
+        console.log("list members",listMembers);
       }      
     }
     res.send('authentication succeed');
