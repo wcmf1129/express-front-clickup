@@ -294,9 +294,8 @@ app.all('/front-assign', async (req, res) => {
       for(var i=0;i<taskIds.length;i++){
         var taskId = taskIds[i];
         console.log("taskId:",taskId);
-        var task = await getTask(taskId,clickupak);
-        console.log("task",taskId);
-        console.dir(task, {depth:null});
+        var task = await getTask(taskId,clickupak);            
+        console.log("task:",task);
         var listId = task["list"]["id"];
         console.log("list",listId);
         if( memberId=='' ){
@@ -309,6 +308,7 @@ app.all('/front-assign', async (req, res) => {
         }
         var subtasks = task["subtasks"];
         for ( var subtask in subtasks){
+          console.log("subtask",subtask);
           await addTaskAssignee(subtask["id"], memberId, clickupak);
         }
       }      
