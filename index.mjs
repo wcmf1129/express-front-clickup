@@ -268,7 +268,7 @@ async function getListMembers(listId) {
     {
       method: 'GET',
       headers: {
-        Authorization: 'YOUR_API_KEY_HERE'
+        Authorization: clickupak
       }
     }
   );
