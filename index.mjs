@@ -251,11 +251,13 @@ function getTaskIdsFromFrontConversation(reqBody){
     console.log(url);
     let taskRegex = /\/t\/[a-zA-Z0-9]+/;
     let taskResult = taskRegex.exec(url);
+    console.log("taskResult",taskResult);
     if(taskResult){
       var taskId = taskResult[0].replace("\/t\/", "").trim();      
       taskIds.push(taskId);
     }
   }
+  console.log("taskIds",taskIds);
   return taskIds;
 }
 
