@@ -331,7 +331,7 @@ app.all('/front-assign', async (req, res) => {
 
 app.all('/front-assignee-removed', async (req, res) => {
   var ip = req.socket.remoteAddress;
-  console.log("Just got a request!",ip,"param:",req.params,"body:");
+  console.log("Just got a request! /front-assignee-removed",ip,"param:",req.params,"body:");
   console.dir(req.body, { depth: null });
   var xFrontSignature = req.get('X-Front-Signature');
   console.log("X-Front-Signature:",xFrontSignature);
