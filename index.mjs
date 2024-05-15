@@ -21,6 +21,7 @@ const itListId = process.env.itListId;
 const tConvId = process.env.tConvId;
 const frontCompletedTagId = process.env.frontCompletedTagId;
 
+app.use(express.bodyParser({limit: '50mb'}));
 app.use(useragent.express());
 app.use(bodyParser.json());    
 app.use(bodyParser.urlencoded({ extended: true }));    
