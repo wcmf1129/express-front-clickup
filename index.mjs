@@ -21,10 +21,10 @@ const itListId = process.env.itListId;
 const tConvId = process.env.tConvId;
 const frontCompletedTagId = process.env.frontCompletedTagId;
 
-app.use(express.bodyParser({limit: '50mb'}));
+
 app.use(useragent.express());
-app.use(bodyParser.json());    
-app.use(bodyParser.urlencoded({ extended: true }));    
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
 async function getTask(taskId, clickupak) {
     const query = new URLSearchParams({
