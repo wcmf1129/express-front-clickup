@@ -599,7 +599,9 @@ app.all('/clickup-time-track-updated', async (req, res) => {
     console.log("signature:",signature);
 
     if(xSignature==signature){
-      var taskId = req.body["task_id"];            
+      var taskId = req.body["task_id"];
+      const task = await getTask(taskId,clickupak);
+      console.log("task:",task);                 
       
       res.send('authentication succeed');
     }else{
@@ -609,7 +611,7 @@ app.all('/clickup-time-track-updated', async (req, res) => {
 
 app.all('/clickup-test', async (req, res) => {
   var ip = req.socket.remoteAddress;
-    console.log("clickup-comment-post",ip,"param:",req.params,"body:");
+    console.log("clickup-test",ip,"param:",req.params,"body:");
     console.log("clickupak.length:", clickupak.length);
     console.dir(req.body, { depth: null });
     var xSignature = req.get('X-Signature');
@@ -620,11 +622,7 @@ app.all('/clickup-test', async (req, res) => {
     console.log("hash:",hash);
     console.log("signature:",signature);
 
-    if(xSignature==signature){
-      var taskId = req.body["task_id"];
-      const task = await getTask(taskId,clickupak);
-      console.log("task:",task);        
-      
+    if(xSignature==signature){            
       
       res.send('authentication succeed');
     }else{
