@@ -613,6 +613,7 @@ app.all('/clickup-time-track-updated', async (req, res) => {
         if(filedsTimeRemaining.length>0){
           var timeRemainingVal = filedsTimeRemaining[0]["value"];
           console.log("timeRemainingVal:",timeRemainingVal);
+          await setTaskField(taskId, timeRemainingWlFieldId, timeRemainingVal);
         }
       }
       
