@@ -18,8 +18,11 @@ const clickupWhsAssign = process.env.clickupWhsAssign;
 const frontak = process.env.frontak;
 const frontwhs = process.env.frontwhs;
 const soField = process.env.sofield;
+const timeRemainingFieldId = process.env.timeRemainingFieldId;
+const timeRemainingWlFieldId = process.env.timeRemainingWlFieldId;
 const rsDomain = process.env.rsdomain;
 const itListId = process.env.itListId;
+const transportListId = process.env.transportListId;
 const tConvId = process.env.tConvId;
 const frontCompletedTagId = process.env.frontCompletedTagId;
 
@@ -602,7 +605,16 @@ app.all('/clickup-time-track-updated', async (req, res) => {
     if(xSignature==signature){
       var taskId = req.body["task_id"];
       const task = await getTask(taskId,clickupak);
-      console.log("task:",task);                 
+      console.log("task:",task);
+      var listId = task["list"]["id"];
+      if(listId==transportListId){
+        var customFields = task["custom_fields"];
+        var filedsTimeRemaining = customFields.filter( x => x["id"]==timeRemainingFieldId);
+        if(filedsTimeRemaining.length>0){
+          var timeRemainingVal = filedsTimeRemaining[0]["value"];
+          console.log("timeRemainingVal:",timeRemainingVal);
+        }
+      }
       
       res.send('authentication succeed');
     }else{
