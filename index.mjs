@@ -13,6 +13,7 @@ const clickupak = process.env.clickupak;
 const clickupwhs = process.env.clickupwhs;
 const clickupwhsCommentPost = process.env.clickupwhsCommentPost;
 const clickupwhsTaskUpdated = process.env.clickupwhsTaskUpdated;
+const clickupwhsTaskTimeTrackedUpdated = process.env.clickupwhsTaskTimeTrackedUpdated;
 const clickupWhsAssign = process.env.clickupWhsAssign;
 const frontak = process.env.frontak;
 const frontwhs = process.env.frontwhs;
@@ -593,7 +594,7 @@ app.all('/clickup-time-track-updated', async (req, res) => {
     var xSignature = req.get('X-Signature');
     console.log("X-Signature:",xSignature);
     var bodyText = JSON.stringify(req.body);    
-    const hash = crypto.createHmac('sha256', clickupwhsTaskUpdated).update(bodyText);
+    const hash = crypto.createHmac('sha256', clickupwhsTaskTimeTrackedUpdated).update(bodyText);
     const signature = hash.digest('hex');
     console.log("hash:",hash);
     console.log("signature:",signature);
