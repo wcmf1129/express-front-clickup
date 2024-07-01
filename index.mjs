@@ -13,6 +13,7 @@ const clickupak = process.env.clickupak;
 const clickupwhs = process.env.clickupwhs;
 const clickupwhsCommentPost = process.env.clickupwhsCommentPost;
 const clickupwhsTaskUpdated = process.env.clickupwhsTaskUpdated;
+const clickupwhsTaskCreated = process.env.clickupwhsTaskCreated;
 const clickupwhsTaskTimeTrackedUpdated = process.env.clickupwhsTaskTimeTrackedUpdated;
 const clickupwhsTaskTimeEstimateUpdated = process.env.clickupwhsTaskTimeTimeEstimateUpdated;
 const clickupWhsAssign = process.env.clickupWhsAssign;
@@ -633,6 +634,40 @@ app.all('/clickup-task-time-estimate-updated', async (req, res) => {
     console.log("X-Signature:",xSignature);
     var bodyText = JSON.stringify(req.body);    
     const hash = crypto.createHmac('sha256', clickupwhsTaskTimeEstimateUpdated).update(bodyText);
+    const signature = hash.digest('hex');
+    console.log("hash:",hash);
+    console.log("signature:",signature);
+
+    if(xSignature==signature){
+      var taskId = req.body["task_id"];
+      const task = await getTask(taskId,clickupak);
+      console.log("task:",task);
+      var listId = task["list"]["id"];
+      if(listId==transportListId){
+        var customFields = task["custom_fields"];
+        var filedsTimeRemaining = customFields.filter( x => x["id"]==timeRemainingFieldId);
+        if(filedsTimeRemaining.length>0){
+          var timeRemainingVal = filedsTimeRemaining[0]["value"];
+          console.log("timeRemainingVal:",timeRemainingVal);
+          await setTaskField(taskId, timeRemainingWlFieldId, timeRemainingVal);
+        }
+      }
+      
+      res.send('authentication succeed');
+    }else{
+      res.send('Unauthorized request');
+    }  
+})
+
+app.all('/clickup-task-created', async (req, res) => {
+  var ip = req.socket.remoteAddress;
+    console.log("clickup-task-created",ip,"param:",req.params,"body:");
+    console.log("clickupak.length:", clickupak.length);
+    console.dir(req.body, { depth: null });
+    var xSignature = req.get('X-Signature');
+    console.log("X-Signature:",xSignature);
+    var bodyText = JSON.stringify(req.body);    
+    const hash = crypto.createHmac('sha256', clickupwhsTaskCreated).update(bodyText);
     const signature = hash.digest('hex');
     console.log("hash:",hash);
     console.log("signature:",signature);
