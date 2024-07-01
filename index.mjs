@@ -580,21 +580,7 @@ app.all('/clickup-task-updated', async (req, res) => {
               }
             }
           }
-        }
-        if( field == "time_estimate" ){
-          const task = await getTask(taskId,clickupak);
-          console.log("task:",task);
-          var listId = task["list"]["id"];
-          if(listId==transportListId){
-            var customFields = task["custom_fields"];
-            var filedsTimeRemaining = customFields.filter( x => x["id"]==timeRemainingFieldId);
-            if(filedsTimeRemaining.length>0){
-              var timeRemainingVal = filedsTimeRemaining[0]["value"];
-              console.log("timeRemainingVal:",timeRemainingVal);
-              await setTaskField(taskId, timeRemainingWlFieldId, timeRemainingVal);
-            }
-          }
-        }
+        }        
       }
       
       
