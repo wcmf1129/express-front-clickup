@@ -14,6 +14,7 @@ const clickupwhs = process.env.clickupwhs;
 const clickupwhsCommentPost = process.env.clickupwhsCommentPost;
 const clickupwhsTaskUpdated = process.env.clickupwhsTaskUpdated;
 const clickupwhsTaskTimeTrackedUpdated = process.env.clickupwhsTaskTimeTrackedUpdated;
+const clickupwhsTaskTimeEstimateUpdated = process.env.clickupwhsTaskTimeTimeEstimateUpdated;
 const clickupWhsAssign = process.env.clickupWhsAssign;
 const frontak = process.env.frontak;
 const frontwhs = process.env.frontwhs;
@@ -543,7 +544,7 @@ app.all('/clickup-comment-post', async (req, res) => {
 
 app.all('/clickup-task-updated', async (req, res) => {
   var ip = req.socket.remoteAddress;
-    console.log("clickup-comment-post",ip,"param:",req.params,"body:");
+    console.log("clickup-task-updated",ip,"param:",req.params,"body:");
     console.log("clickupak.length:", clickupak.length);
     console.dir(req.body, { depth: null });
     var xSignature = req.get('X-Signature');
@@ -555,7 +556,7 @@ app.all('/clickup-task-updated', async (req, res) => {
     console.log("signature:",signature);
 
     if(xSignature==signature){
-      var taskId = req.body["task_id"];
+      var taskId = req.body["task_id"];      
       if( "history_items" in req.body){
         var field = req.body["history_items"][0]["field"];
         if( field == "custom_field" ){
@@ -580,6 +581,20 @@ app.all('/clickup-task-updated', async (req, res) => {
             }
           }
         }
+        if( field == "time_estimate" ){
+          const task = await getTask(taskId,clickupak);
+          console.log("task:",task);
+          var listId = task["list"]["id"];
+          if(listId==transportListId){
+            var customFields = task["custom_fields"];
+            var filedsTimeRemaining = customFields.filter( x => x["id"]==timeRemainingFieldId);
+            if(filedsTimeRemaining.length>0){
+              var timeRemainingVal = filedsTimeRemaining[0]["value"];
+              console.log("timeRemainingVal:",timeRemainingVal);
+              await setTaskField(taskId, timeRemainingWlFieldId, timeRemainingVal);
+            }
+          }
+        }
       }
       
       
@@ -598,6 +613,40 @@ app.all('/clickup-time-track-updated', async (req, res) => {
     console.log("X-Signature:",xSignature);
     var bodyText = JSON.stringify(req.body);    
     const hash = crypto.createHmac('sha256', clickupwhsTaskTimeTrackedUpdated).update(bodyText);
+    const signature = hash.digest('hex');
+    console.log("hash:",hash);
+    console.log("signature:",signature);
+
+    if(xSignature==signature){
+      var taskId = req.body["task_id"];
+      const task = await getTask(taskId,clickupak);
+      console.log("task:",task);
+      var listId = task["list"]["id"];
+      if(listId==transportListId){
+        var customFields = task["custom_fields"];
+        var filedsTimeRemaining = customFields.filter( x => x["id"]==timeRemainingFieldId);
+        if(filedsTimeRemaining.length>0){
+          var timeRemainingVal = filedsTimeRemaining[0]["value"];
+          console.log("timeRemainingVal:",timeRemainingVal);
+          await setTaskField(taskId, timeRemainingWlFieldId, timeRemainingVal);
+        }
+      }
+      
+      res.send('authentication succeed');
+    }else{
+      res.send('Unauthorized request');
+    }  
+})
+
+app.all('/clickup-task-time-estimate-updated', async (req, res) => {
+  var ip = req.socket.remoteAddress;
+    console.log("clickup-task-time-estimate-updated",ip,"param:",req.params,"body:");
+    console.log("clickupak.length:", clickupak.length);
+    console.dir(req.body, { depth: null });
+    var xSignature = req.get('X-Signature');
+    console.log("X-Signature:",xSignature);
+    var bodyText = JSON.stringify(req.body);    
+    const hash = crypto.createHmac('sha256', clickupwhsTaskTimeEstimateUpdated).update(bodyText);
     const signature = hash.digest('hex');
     console.log("hash:",hash);
     console.log("signature:",signature);
