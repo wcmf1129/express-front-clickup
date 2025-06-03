@@ -23,6 +23,7 @@ const soField = process.env.sofield;
 const timeRemainingFieldId = process.env.timeRemainingFieldId;
 const timeRemainingWlFieldId = process.env.timeRemainingWlFieldId;
 const rsDomain = process.env.rsdomain;
+const designSpaceId = process.env.designSpaceId;
 const itListId = process.env.itListId;
 const transportListId = process.env.transportListId;
 const tConvId = process.env.tConvId;
@@ -171,80 +172,86 @@ app.all('/clickup-assign', async (req, res) => {
         const task = await getTask(taskId,clickupak);
         console.log("task:",task);        
         console.log("task id:",task["id"]);
-        console.log("task assignees:",task["assignees"]);          
-        var subtasks = task["subtasks"];
-        if(subtasks){
-          for(var i=0;i<subtasks.length;i++){
-            console.log("subtask",i,subtasks[i]["id"],subtasks[i]["name"]);
-            if( subtasks[i]["name"].toUpperCase().includes("COMM REVIEW") || subtasks[i]["name"].toUpperCase().includes("COMMERCIAL REVIEW") || subtasks[i]["name"].toUpperCase().includes("CHECK") ){
+        console.log("task assignees:",task["assignees"]);
+        var spaceId = task["space"]["id"];
+        if(spaceId==designSpaceId){
 
-            }else{
-              var subtaskId = subtasks[i]["id"];
-              switch(req.body["history_items"][0]["field"]){
-                case "assignee_add":
-                  var updatedAssignee = req.body["history_items"][0]["after"];
-                  console.log("updatedAssignee:",updatedAssignee);
-                  console.log("assignee_add:",subtaskId,updatedAssignee["id"]);
-                  await addTaskAssignee(subtaskId, updatedAssignee["id"], clickupak);
-                  break;
-                case "assignee_rem":
-                  var updatedAssignee = req.body["history_items"][0]["before"];
-                  console.log("updatedAssignee:",updatedAssignee);
-                  console.log("assignee_rem:",subtaskId,updatedAssignee["id"]);
-                  await removeTaskAssignee(subtaskId, updatedAssignee["id"], clickupak);
-                  break;
-                default:
+          var subtasks = task["subtasks"];
+          if(subtasks){
+            for(var i=0;i<subtasks.length;i++){
+              console.log("subtask",i,subtasks[i]["id"],subtasks[i]["name"]);
+              if( subtasks[i]["name"].toUpperCase().includes("COMM REVIEW") || subtasks[i]["name"].toUpperCase().includes("COMMERCIAL REVIEW") || subtasks[i]["name"].toUpperCase().includes("CHECK") ){
 
-              }            
+              }else{
+                var subtaskId = subtasks[i]["id"];
+                switch(req.body["history_items"][0]["field"]){
+                  case "assignee_add":
+                    var updatedAssignee = req.body["history_items"][0]["after"];
+                    console.log("updatedAssignee:",updatedAssignee);
+                    console.log("assignee_add:",subtaskId,updatedAssignee["id"]);
+                    await addTaskAssignee(subtaskId, updatedAssignee["id"], clickupak);
+                    break;
+                  case "assignee_rem":
+                    var updatedAssignee = req.body["history_items"][0]["before"];
+                    console.log("updatedAssignee:",updatedAssignee);
+                    console.log("assignee_rem:",subtaskId,updatedAssignee["id"]);
+                    await removeTaskAssignee(subtaskId, updatedAssignee["id"], clickupak);
+                    break;
+                  default:
+
+                }            
+              }
             }
           }
-        }
 
-        var taskAssigneesEmails = []
-        if(task["assignees"]){
-          if(task["assignees"].length>0){
-            taskAssigneesEmails = task["assignees"].map( x => x["email"] );
+          var taskAssigneesEmails = []
+          if(task["assignees"]){
+            if(task["assignees"].length>0){
+              taskAssigneesEmails = task["assignees"].map( x => x["email"] );
+            }
           }
+          console.log("taskAssigneesEmails:", taskAssigneesEmails);
+
+          var clickupComment = await getTaskComments(taskId,clickupak);
+          var frontConvId = clickupComment["front_conversation_id"];
+          console.log("frontConvId:",frontConvId);
+          if(frontConvId){
+            await sdk.auth(frontak);
+
+            var teammates;
+            await sdk.getTeammates()
+              .then( async ({ data }) => {
+                console.log("Front teammates:",data["_results"].length);
+                teammates = data["_results"];
+                await sdk.getConversationById({conversation_id: frontConvId})
+                  .then( async ({ data }) => {
+                    console.log("Front conversation:");
+                    // console.dir(data,{depth:null});
+                    for(var i=0;i<taskAssigneesEmails.length;i++){
+                      var filteredTeammates = teammates.filter(x => x["email"]==taskAssigneesEmails[i]);
+                      console.log(i,"matched teammate:",filteredTeammates);
+                      if(filteredTeammates.length>0){
+                        var teammateId = filteredTeammates[0]["id"];
+                        await sdk.patchConversationsConversation_id({assignee_id: teammateId}, {conversation_id: frontConvId})
+                          .then(({ data }) => console.log(data))
+                          .catch(err => console.error(err));
+                      }                
+                    }
+                    if(taskAssigneesEmails.length==0){
+                      console.log("taskAssigneesEmails.length==0");
+                      await sdk.patchConversationsConversation_id({assignee_id: null}, {conversation_id: frontConvId})
+                          .then(({ data }) => console.log(data))
+                          .catch(err => console.error(err));
+                    }
+                  })
+                  .catch(err => console.error(err));
+
+              })
+              .catch(err => console.error(err));              
+          }
+
         }
-        console.log("taskAssigneesEmails:", taskAssigneesEmails);
-
-        var clickupComment = await getTaskComments(taskId,clickupak);
-        var frontConvId = clickupComment["front_conversation_id"];
-        console.log("frontConvId:",frontConvId);
-        if(frontConvId){
-          await sdk.auth(frontak);
-
-          var teammates;
-          await sdk.getTeammates()
-            .then( async ({ data }) => {
-              console.log("Front teammates:",data["_results"].length);
-              teammates = data["_results"];
-              await sdk.getConversationById({conversation_id: frontConvId})
-                .then( async ({ data }) => {
-                  console.log("Front conversation:");
-                  // console.dir(data,{depth:null});
-                  for(var i=0;i<taskAssigneesEmails.length;i++){
-                    var filteredTeammates = teammates.filter(x => x["email"]==taskAssigneesEmails[i]);
-                    console.log(i,"matched teammate:",filteredTeammates);
-                    if(filteredTeammates.length>0){
-                      var teammateId = filteredTeammates[0]["id"];
-                      await sdk.patchConversationsConversation_id({assignee_id: teammateId}, {conversation_id: frontConvId})
-                        .then(({ data }) => console.log(data))
-                        .catch(err => console.error(err));
-                    }                
-                  }
-                  if(taskAssigneesEmails.length==0){
-                    console.log("taskAssigneesEmails.length==0");
-                    await sdk.patchConversationsConversation_id({assignee_id: null}, {conversation_id: frontConvId})
-                        .then(({ data }) => console.log(data))
-                        .catch(err => console.error(err));
-                  }
-                })
-                .catch(err => console.error(err));
-
-            })
-            .catch(err => console.error(err));              
-        }
+        
         res.send('authentication succeed');
     }else{
         res.send('Unauthorized request');
@@ -305,27 +312,32 @@ app.all('/front-assign', async (req, res) => {
         var task = await getTask(taskId,clickupak);            
         console.log("task:",task);
         var listId = task["list"]["id"];
+        var spaceId = task["space"]["id"];
         console.log("list",listId);
-        if( memberId=='' ){
-          var listMembers = await getListMembers(listId);          
-          var matchMembers = listMembers["members"].filter( x => x["email"]==assigneeEmail );
-          if( matchMembers.length>0 ){
-            memberId = matchMembers[0]["id"];
-            await addTaskAssignee(taskId, memberId, clickupak);
+        console.log("spaceId",spaceId);
+        if(spaceId==designSpaceId){
+          if( memberId=='' ){
+            var listMembers = await getListMembers(listId);          
+            var matchMembers = listMembers["members"].filter( x => x["email"]==assigneeEmail );
+            if( matchMembers.length>0 ){
+              memberId = matchMembers[0]["id"];
+              await addTaskAssignee(taskId, memberId, clickupak);
+            }
+          }
+          var subtasks = task["subtasks"];
+          console.log("subtasks",subtasks);
+          if(subtasks){        
+            for ( var subtask of subtasks){
+              console.log("subtask",subtask);
+              if( subtask["name"].toUpperCase().includes("COMM REVIEW") || subtask["name"].toUpperCase().includes("COMMERCIAL REVIEW") || subtask["name"].toUpperCase().includes("CHECK") ){
+  
+              }else{
+                await addTaskAssignee(subtask["id"], memberId, clickupak);
+              }          
+            }
           }
         }
-        var subtasks = task["subtasks"];
-        console.log("subtasks",subtasks);
-        if(subtasks){        
-          for ( var subtask of subtasks){
-            console.log("subtask",subtask);
-            if( subtask["name"].toUpperCase().includes("COMM REVIEW") || subtask["name"].toUpperCase().includes("COMMERCIAL REVIEW") || subtask["name"].toUpperCase().includes("CHECK") ){
-
-            }else{
-              await addTaskAssignee(subtask["id"], memberId, clickupak);
-            }          
-          }
-        }
+        
       }      
     }
     res.send('authentication succeed');
@@ -426,11 +438,15 @@ app.all('/front-comment', async (req, res) => {
           console.log("taskId:", taskId);
           await setTaskField(taskId, soField, orderNumber);
           var task = await getTask(taskId, clickupak);
-          var subtasks = task["subtasks"];
-          for(var j=0;j<subtasks.length;j++){
-            var subtaskId = subtasks[j]["id"];
-            await setTaskField(subtaskId, soField, orderNumber);
+          var spaceId = task["space"]["id"];
+          if(spaceId==designSpaceId){
+            var subtasks = task["subtasks"];
+            for(var j=0;j<subtasks.length;j++){
+              var subtaskId = subtasks[j]["id"];
+              await setTaskField(subtaskId, soField, orderNumber);
+            }
           }
+          
         }      
       }
     }
@@ -474,69 +490,74 @@ app.all('/clickup-comment-post', async (req, res) => {
 
     if(xSignature==signature){
       var taskId = req.body["task_id"];
-      var comments = req.body["history_items"][0]["comment"]["comment"];
-      console.log("comments:",comments);
-      var frontConv = "";
-      for(var i=0;i<comments.length;i++){
-        console.log(`comment ${i}: ${comments[i]["text"]}`);
-        var match = comments[i]["text"].match( /\/cnv_[a-zA-Z0-9]+/ );
-        if (match !== null) {
-          frontConv = match[0].substring(1);
-          break;
-        } 
-      }      
-      console.log(`frontConv: ${frontConv}`);
-      if(frontConv!=""){
-        await sdk.auth(frontak);
-        await sdk.getConversationById({conversation_id: frontConv})
-          .then( async ({ data }) => {
-            console.dir(data,{depth:null});
-            var recipient = data["recipient"];
-            var recipientHandle = recipient["handle"];
-            console.log(`recipientHandle: ${recipientHandle}`);
-            if( recipientHandle.includes(rsDomain) ){
-              
-            }else{              
-
-            }
-              var recipientLink = recipient["_links"]["related"]["contact"];
-              var match = recipientLink.match( /\/crd_[a-zA-Z0-9]+/ );
-              if( match != null ){
-                var contactId = match[0].substring(1);
-                console.log(`contactId: ${contactId}`);
-                await sdk.getContactsContact_id({contact_id: contactId})
-                .then( async ({ data }) => {
-                  console.dir(data, {depth:null});
-                  if(data["account"]!=null){                    
-                    if( "custom_fields" in data["account"] ){
-                      if( "Account #" in data["account"]["custom_fields"]){
-                        var accountNumber = data["account"]["custom_fields"]["Account #"];                        
-                        
-                        var task = await getTask(taskId, clickupak);                        
-                        var customerFieldsList = task["custom_fields"].filter( x => x["name"]=="CUSTOMER");
-                        if( customerFieldsList.length>0 ){
-                          var customerField = customerFieldsList[0];
-                          var filedId = customerField["id"];
-                          var options = customerField["type_config"]["options"];
-                          var matchOptions = options.filter( x => x["name"].includes(accountNumber) );
-                          if(matchOptions.length>0){
-                            console.log(`matchOption:`);
-                            console.dir(matchOptions[0], {depth:null});
-                            var valueID = matchOptions[0]["id"];
-                            await setTaskField(taskId, filedId, valueID);
+      var task = await getTask(taskId, clickupak);
+      var spaceId = task["space"]["id"];
+      if(spaceId==designSpaceId){
+        var comments = req.body["history_items"][0]["comment"]["comment"];
+        console.log("comments:",comments);
+        var frontConv = "";
+        for(var i=0;i<comments.length;i++){
+          console.log(`comment ${i}: ${comments[i]["text"]}`);
+          var match = comments[i]["text"].match( /\/cnv_[a-zA-Z0-9]+/ );
+          if (match !== null) {
+            frontConv = match[0].substring(1);
+            break;
+          } 
+        }      
+        console.log(`frontConv: ${frontConv}`);
+        if(frontConv!=""){
+          await sdk.auth(frontak);
+          await sdk.getConversationById({conversation_id: frontConv})
+            .then( async ({ data }) => {
+              console.dir(data,{depth:null});
+              var recipient = data["recipient"];
+              var recipientHandle = recipient["handle"];
+              console.log(`recipientHandle: ${recipientHandle}`);
+              if( recipientHandle.includes(rsDomain) ){
+                
+              }else{              
+  
+              }
+                var recipientLink = recipient["_links"]["related"]["contact"];
+                var match = recipientLink.match( /\/crd_[a-zA-Z0-9]+/ );
+                if( match != null ){
+                  var contactId = match[0].substring(1);
+                  console.log(`contactId: ${contactId}`);
+                  await sdk.getContactsContact_id({contact_id: contactId})
+                  .then( async ({ data }) => {
+                    console.dir(data, {depth:null});
+                    if(data["account"]!=null){                    
+                      if( "custom_fields" in data["account"] ){
+                        if( "Account #" in data["account"]["custom_fields"]){
+                          var accountNumber = data["account"]["custom_fields"]["Account #"];                        
+                          
+                          var task = await getTask(taskId, clickupak);                        
+                          var customerFieldsList = task["custom_fields"].filter( x => x["name"]=="CUSTOMER");
+                          if( customerFieldsList.length>0 ){
+                            var customerField = customerFieldsList[0];
+                            var filedId = customerField["id"];
+                            var options = customerField["type_config"]["options"];
+                            var matchOptions = options.filter( x => x["name"].includes(accountNumber) );
+                            if(matchOptions.length>0){
+                              console.log(`matchOption:`);
+                              console.dir(matchOptions[0], {depth:null});
+                              var valueID = matchOptions[0]["id"];
+                              await setTaskField(taskId, filedId, valueID);
+                            }
                           }
+  
                         }
-
                       }
                     }
-                  }
-                })
-                .catch(err => console.error(err));
-              }
-          })
-          .catch(err => console.error(err));
-
+                  })
+                  .catch(err => console.error(err));
+                }
+            })
+            .catch(err => console.error(err));
+  
+        }
       }
+      
       res.send('authentication succeed');
     }else{
       res.send('Unauthorized request');
@@ -558,31 +579,36 @@ app.all('/clickup-task-updated', async (req, res) => {
 
     if(xSignature==signature){
       var taskId = req.body["task_id"];      
-      if( "history_items" in req.body){
-        var field = req.body["history_items"][0]["field"];
-        if( field == "custom_field" ){
-          var fieldName = req.body["history_items"][0]["custom_field"]["name"];
-          if( fieldName == "COMPLETE"){
-            var afterId = req.body["history_items"][0]["after"];
-            var completeOptions = req.body["history_items"][0]["custom_field"]["type_config"]["options"].filter( x => x["name"]=="COMPLETE");
-            if( completeOptions.length>0 ){
-              var completeOptionId = completeOptions[0]["id"];
-              console.log(`afterId:${afterId} completeOptionId:${completeOptionId} `);
-              if( afterId == completeOptionId ){
-                var clickupComment = await getTaskComments(taskId,clickupak);
-                var frontConvId = clickupComment["front_conversation_id"];
-                console.log("frontConvId:",frontConvId);
-                if(frontConvId){
-                  await sdk.auth(frontak);                              
-                  await sdk.postConversationsConversation_idTags({tag_ids: [frontCompletedTagId]}, {conversation_id: frontConvId})
-                  .then(({ data }) => console.log(data))
-                  .catch(err => console.error(err));
+      var task = await getTask(taskId, clickupak);
+      var spaceId = task["space"]["id"];
+      if(spaceId==designSpaceId){
+        if( "history_items" in req.body){
+          var field = req.body["history_items"][0]["field"];
+          if( field == "custom_field" ){
+            var fieldName = req.body["history_items"][0]["custom_field"]["name"];
+            if( fieldName == "COMPLETE"){
+              var afterId = req.body["history_items"][0]["after"];
+              var completeOptions = req.body["history_items"][0]["custom_field"]["type_config"]["options"].filter( x => x["name"]=="COMPLETE");
+              if( completeOptions.length>0 ){
+                var completeOptionId = completeOptions[0]["id"];
+                console.log(`afterId:${afterId} completeOptionId:${completeOptionId} `);
+                if( afterId == completeOptionId ){
+                  var clickupComment = await getTaskComments(taskId,clickupak);
+                  var frontConvId = clickupComment["front_conversation_id"];
+                  console.log("frontConvId:",frontConvId);
+                  if(frontConvId){
+                    await sdk.auth(frontak);                              
+                    await sdk.postConversationsConversation_idTags({tag_ids: [frontCompletedTagId]}, {conversation_id: frontConvId})
+                    .then(({ data }) => console.log(data))
+                    .catch(err => console.error(err));
+                  }
                 }
               }
             }
-          }
-        }        
+          }        
+        }
       }
+      
       
       
       res.send('authentication succeed');
@@ -686,6 +712,9 @@ app.all('/clickup-task-created', async (req, res) => {
           await setTaskField(taskId, timeRemainingWlFieldId, timeRemainingVal);
         }
       }
+
+      var clickupComment = await getTaskComments(taskId,clickupak);
+      console.log("clickupComment:",clickupComment);
       
       res.send('authentication succeed');
     }else{
