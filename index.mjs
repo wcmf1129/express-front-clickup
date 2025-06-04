@@ -718,7 +718,7 @@ app.all('/clickup-task-created', async (req, res) => {
       var frontConvId = clickupComment["front_conversation_id"];
       if(frontConvId){
         await sdk.auth(frontak);                              
-        await sdk.getConversationById({conversation_id: 'frontConvId'})
+        await sdk.getConversationById({conversation_id: frontConvId})
         .then(({ data }) => {
           console.log(data)
         })
