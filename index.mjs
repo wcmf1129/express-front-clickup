@@ -28,7 +28,10 @@ const itListId = process.env.itListId;
 const transportListId = process.env.transportListId;
 const tConvId = process.env.tConvId;
 const frontCompletedTagId = process.env.frontCompletedTagId;
-
+const workGroupFieldId = process.env.workGroupFieldId;
+const valueIdPP = process.env.valueIdPP;
+const valueIdWP = process.env.valueIdWP;
+const valueIdEST = process.env.valueIdEST;
 
 app.use(useragent.express());
 app.use(bodyParser.json({limit: '50mb'}));
@@ -720,7 +723,26 @@ app.all('/clickup-task-created', async (req, res) => {
         await sdk.auth(frontak);                              
         await sdk.getConversationById({conversation_id: frontConvId})
         .then(({ data }) => {
-          console.log(data)
+          console.log(data);
+          var tags = data["tags"];
+          for(var i=0;i<tags.length;i++){
+            if(tags[i]["name"].includes("ASM")){
+              var asm = tags[i]["name"].replace("ASM=", "").trim();
+              var valueId;
+              if( ["KH","DA","KN"].includes(asm) ){
+                valueId = valueIdWP;
+              }
+              if( ["TP","NB"].includes(asm) ){
+                valueId = valueIdPP;
+              }
+              if(valueId){
+                console.log("set work group field:",workGroupFieldId,"valueId:",valueId);
+                setTaskField(taskId, workGroupFieldId, valueId)
+                  .then(() => console.log("Work group field updated successfully"))
+                  .catch(err => console.error("Error updating work group field:", err));
+              }
+            }
+          }
         })
         .catch(err => console.error(err));
       }
