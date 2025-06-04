@@ -177,7 +177,7 @@ app.all('/clickup-assign', async (req, res) => {
         console.log("task id:",task["id"]);
         console.log("task assignees:",task["assignees"]);
         var spaceId = task["space"]["id"];
-        if(spaceId==designSpaceId){
+        // if(spaceId==designSpaceId){
 
           var subtasks = task["subtasks"];
           if(subtasks){
@@ -253,7 +253,7 @@ app.all('/clickup-assign', async (req, res) => {
               .catch(err => console.error(err));              
           }
 
-        }
+        // }
         
         res.send('authentication succeed');
     }else{
@@ -318,7 +318,7 @@ app.all('/front-assign', async (req, res) => {
         var spaceId = task["space"]["id"];
         console.log("list",listId);
         console.log("spaceId",spaceId);
-        if(spaceId==designSpaceId){
+        // if(spaceId==designSpaceId){
           if( memberId=='' ){
             var listMembers = await getListMembers(listId);          
             var matchMembers = listMembers["members"].filter( x => x["email"]==assigneeEmail );
@@ -339,7 +339,7 @@ app.all('/front-assign', async (req, res) => {
               }          
             }
           }
-        }
+        // }
         
       }      
     }
@@ -442,13 +442,13 @@ app.all('/front-comment', async (req, res) => {
           await setTaskField(taskId, soField, orderNumber);
           var task = await getTask(taskId, clickupak);
           var spaceId = task["space"]["id"];
-          if(spaceId==designSpaceId){
+          // if(spaceId==designSpaceId){
             var subtasks = task["subtasks"];
             for(var j=0;j<subtasks.length;j++){
               var subtaskId = subtasks[j]["id"];
               await setTaskField(subtaskId, soField, orderNumber);
             }
-          }
+          // }
           
         }      
       }
@@ -495,7 +495,7 @@ app.all('/clickup-comment-post', async (req, res) => {
       var taskId = req.body["task_id"];
       var task = await getTask(taskId, clickupak);
       var spaceId = task["space"]["id"];
-      if(spaceId==designSpaceId){
+      // if(spaceId==designSpaceId){
         var comments = req.body["history_items"][0]["comment"]["comment"];
         console.log("comments:",comments);
         var frontConv = "";
@@ -559,7 +559,7 @@ app.all('/clickup-comment-post', async (req, res) => {
             .catch(err => console.error(err));
   
         }
-      }
+      // }
       
       res.send('authentication succeed');
     }else{
@@ -584,7 +584,7 @@ app.all('/clickup-task-updated', async (req, res) => {
       var taskId = req.body["task_id"];      
       var task = await getTask(taskId, clickupak);
       var spaceId = task["space"]["id"];
-      if(spaceId==designSpaceId){
+      // if(spaceId==designSpaceId){
         if( "history_items" in req.body){
           var field = req.body["history_items"][0]["field"];
           if( field == "custom_field" ){
@@ -610,7 +610,7 @@ app.all('/clickup-task-updated', async (req, res) => {
             }
           }        
         }
-      }
+      // }
       
       
       
