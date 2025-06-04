@@ -715,6 +715,15 @@ app.all('/clickup-task-created', async (req, res) => {
 
       var clickupComment = await getTaskComments(taskId,clickupak);
       console.log("clickupComment:",clickupComment);
+      var frontConvId = clickupComment["front_conversation_id"];
+      if(frontConvId){
+        await sdk.auth(frontak);                              
+        await sdk.getConversationById({conversation_id: 'frontConvId'})
+        .then(({ data }) => {
+          console.log(data)
+        })
+        .catch(err => console.error(err));
+      }
       
       res.send('authentication succeed');
     }else{
