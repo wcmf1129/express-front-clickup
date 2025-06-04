@@ -740,6 +740,7 @@ app.all('/clickup-task-created', async (req, res) => {
                 setTaskField(taskId, workGroupFieldId, valueId)
                   .then(() => console.log("Work group field updated successfully"))
                   .catch(err => console.error("Error updating work group field:", err));
+                break;
               }
             }
           }
