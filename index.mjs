@@ -740,6 +740,16 @@ app.all('/clickup-task-created', async (req, res) => {
                 setTaskField(taskId, workGroupFieldId, valueId)
                   .then(() => console.log("Work group field updated successfully"))
                   .catch(err => console.error("Error updating work group field:", err));
+                var subtasks = task["subtasks"];
+                if(subtasks){
+                  for(var i=0;i<subtasks.length;i++){
+                    console.log("subtask",i,subtasks[i]["id"],subtasks[i]["name"]);
+                    var subtaskId = subtasks[i]["id"];
+                    setTaskField(subtaskId, workGroupFieldId, valueId)
+                    .then(() => console.log("Work group field updated successfully"))
+                    .catch(err => console.error("Error updating work group field:", err));
+                  }
+                }
                 break;
               }
             }
