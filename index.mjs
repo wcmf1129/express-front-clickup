@@ -37,6 +37,10 @@ app.use(useragent.express());
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
+function wait(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function getTask(taskId, clickupak) {
     const query = new URLSearchParams({
     //   custom_task_ids: 'false',
@@ -706,8 +710,7 @@ app.all('/clickup-task-created', async (req, res) => {
 
       var ms = 10000;
       console.log('Wait Start:',Date.now());
-      const start = Date.now();
-      while (Date.now() - start < ms) {}
+      await wait(ms);
       console.log('Wait End:',Date.now());
 
       const task = await getTask(taskId,clickupak);
