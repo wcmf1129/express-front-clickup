@@ -703,6 +703,13 @@ app.all('/clickup-task-created', async (req, res) => {
 
     if(xSignature==signature){
       var taskId = req.body["task_id"];
+
+      var ms = 5000;
+      console.log('Wait Start:',Date.now());
+      const start = Date.now();
+      while (Date.now() - start < ms) {}
+      console.log('Wait End:',Date.now());
+
       const task = await getTask(taskId,clickupak);
       console.log("task:",task);
       var listId = task["list"]["id"];
