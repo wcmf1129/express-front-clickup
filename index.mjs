@@ -37,9 +37,6 @@ app.use(useragent.express());
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
-function wait(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 async function getTask(taskId, clickupak) {
     const query = new URLSearchParams({
@@ -706,15 +703,11 @@ app.all('/clickup-task-created', async (req, res) => {
     console.log("signature:",signature);
 
     if(xSignature==signature){
-      var taskId = req.body["task_id"];
-
-      var ms = 10000;
-      console.log('Wait Start:',Date.now());
-      await wait(ms);
-      console.log('Wait End:',Date.now());
+      var taskId = req.body["task_id"];      
 
       const task = await getTask(taskId,clickupak);
       console.log("task:",task);
+      console.log("parent:",task["parent"]);
       var listId = task["list"]["id"];
       if(listId==transportListId){
         var customFields = task["custom_fields"];
