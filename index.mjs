@@ -689,6 +689,10 @@ app.all('/clickup-task-time-estimate-updated', async (req, res) => {
     }  
 })
 
+async function getFrontTagOfTask(taskId){
+
+}
+
 app.all('/clickup-task-created', async (req, res) => {
   var ip = req.socket.remoteAddress;
     console.log("clickup-task-created",ip,"param:",req.params,"body:");
@@ -720,7 +724,11 @@ app.all('/clickup-task-created', async (req, res) => {
         }
       }
 
-      var clickupComment = await getTaskComments(taskId,clickupak);
+      var convTaskId = taskId;
+      if(parentTaskId){
+        convTaskId = parentTaskId;
+      }
+      var clickupComment = await getTaskComments(convTaskId,clickupak);
       console.log("clickupComment:",clickupComment);
       var frontConvId = clickupComment["front_conversation_id"];
       if(frontConvId){
