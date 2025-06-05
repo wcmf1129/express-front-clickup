@@ -583,7 +583,7 @@ app.all('/clickup-task-updated', async (req, res) => {
     if(xSignature==signature){
       var taskId = req.body["task_id"];      
       var task = await getTask(taskId, clickupak);
-      var spaceId = task["space"]["id"];
+      // var spaceId = task["space"]["id"];
       // if(spaceId==designSpaceId){
         if( "history_items" in req.body){
           var field = req.body["history_items"][0]["field"];
