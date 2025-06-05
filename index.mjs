@@ -708,6 +708,7 @@ app.all('/clickup-task-created', async (req, res) => {
       const task = await getTask(taskId,clickupak);
       console.log("task:",task);
       console.log("parent:",task["parent"]);
+      const parentTaskId = task["parent"];
       var listId = task["list"]["id"];
       if(listId==transportListId){
         var customFields = task["custom_fields"];
@@ -760,6 +761,11 @@ app.all('/clickup-task-created', async (req, res) => {
           }
         })
         .catch(err => console.error(err));
+      }
+
+      if(parentTaskId){
+        const parentTask = await getTask(parentTaskId,clickupak);
+        console.log("parentTask:",parentTask);
       }
       
       res.send('authentication succeed');
