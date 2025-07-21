@@ -737,36 +737,36 @@ app.all('/clickup-task-created', async (req, res) => {
         .then(async ({ data }) => {
           console.log(data);
           var tags = data["tags"];
-          for(var i=0;i<tags.length;i++){
-            if(tags[i]["name"].includes("ASM")){
-              var asm = tags[i]["name"].replace("ASM=", "").trim();
-              var valueId;
-              if( ["KH","DA","KN"].includes(asm) ){
-                valueId = valueIdWP;
-              }
-              if( ["TP","NB"].includes(asm) ){
-                valueId = valueIdPP;
-              }
-              if(valueId){
-                console.log("set work group field:",workGroupFieldId,"valueId:",valueId);
-                await setTaskField(taskId, workGroupFieldId, valueId)
-                  .then(() => console.log("Work group field updated successfully"))
-                  .catch(err => console.error("Error updating work group field:", err));
-                var subtasks = task["subtasks"];
-                console.log("subtasks:", subtasks);
-                if(subtasks){
-                  for(var i=0;i<subtasks.length;i++){
-                    console.log("subtask",i,subtasks[i]["id"],subtasks[i]["name"]);
-                    var subtaskId = subtasks[i]["id"];
-                    await setTaskField(subtaskId, workGroupFieldId, valueId)
-                      .then(() => console.log("Work group field updated successfully"))
-                      .catch(err => console.error("Error updating work group field:", err));
-                  }
-                }
-                break;
-              }
-            }
-          }
+          // for(var i=0;i<tags.length;i++){
+          //   if(tags[i]["name"].includes("ASM")){
+          //     var asm = tags[i]["name"].replace("ASM=", "").trim();
+          //     var valueId;
+          //     if( ["KH","DA","KN"].includes(asm) ){
+          //       valueId = valueIdWP;
+          //     }
+          //     if( ["TP","NB"].includes(asm) ){
+          //       valueId = valueIdPP;
+          //     }
+          //     if(valueId){
+          //       console.log("set work group field:",workGroupFieldId,"valueId:",valueId);
+          //       await setTaskField(taskId, workGroupFieldId, valueId)
+          //         .then(() => console.log("Work group field updated successfully"))
+          //         .catch(err => console.error("Error updating work group field:", err));
+          //       var subtasks = task["subtasks"];
+          //       console.log("subtasks:", subtasks);
+          //       if(subtasks){
+          //         for(var i=0;i<subtasks.length;i++){
+          //           console.log("subtask",i,subtasks[i]["id"],subtasks[i]["name"]);
+          //           var subtaskId = subtasks[i]["id"];
+          //           await setTaskField(subtaskId, workGroupFieldId, valueId)
+          //             .then(() => console.log("Work group field updated successfully"))
+          //             .catch(err => console.error("Error updating work group field:", err));
+          //         }
+          //       }
+          //       break;
+          //     }
+          //   }
+          // }
         })
         .catch(err => console.error(err));
       }
