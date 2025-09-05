@@ -445,9 +445,11 @@ app.all('/front-comment', async (req, res) => {
           var spaceId = task["space"]["id"];
           // if(spaceId==designSpaceId){
             var subtasks = task["subtasks"];
-            for(var j=0;j<subtasks.length;j++){
-              var subtaskId = subtasks[j]["id"];
-              await setTaskField(subtaskId, soField, orderNumber);
+            if(subtasks){
+                for(var j=0;j<subtasks.length;j++){
+                  var subtaskId = subtasks[j]["id"];
+                  await setTaskField(subtaskId, soField, orderNumber);
+                }
             }
           // }
           
